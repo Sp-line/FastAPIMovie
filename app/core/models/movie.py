@@ -1,11 +1,15 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import String, Text, SmallInteger, DateTime, CheckConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from constants import MOVIE_SLUG_MAX_LEN, MOVIE_TITLE_MAX_LEN, MOVIE_AGE_RATING_MAX_LEN, IMAGE_URL_MAX_LEN
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
+
+if TYPE_CHECKING:
+    from core.models import MovieShot
 
 
 class Movie(IntIdPkMixin, Base):
@@ -22,3 +26,8 @@ class Movie(IntIdPkMixin, Base):
     premiere_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     release_year: Mapped[int] = mapped_column(SmallInteger)
     poster_url: Mapped[str | None] = mapped_column(String(IMAGE_URL_MAX_LEN))
+
+    shots: Mapped[list["MovieShot"]] = relationship(
+        back_populates="movie",
+        cascade="all, delete-orphan"
+    )
