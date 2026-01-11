@@ -5,6 +5,7 @@ __all__ = (
     "Country",
     "Person",
     "Movie",
+    "MovieShot",
 )
 
 from .base import Base
@@ -12,4 +13,5 @@ from .country import Country
 from .db_helper import db_helper
 from .genre import Genre
 from .movie import Movie
+from .movie_shot import MovieShot
 from .person import Person
