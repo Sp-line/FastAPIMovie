@@ -3,8 +3,8 @@ services:
   pg:
     image: postgres
     environment:
-      POSTGRES_DB: shop
+      POSTGRES_DB: app
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: pwd
     ports:
       - "5432:5432"
