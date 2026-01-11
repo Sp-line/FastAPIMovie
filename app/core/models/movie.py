@@ -9,7 +9,7 @@ from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from core.models import MovieShot
+    from core.models import MovieShot, MoviePersonAssociation
 
 
 class Movie(IntIdPkMixin, Base):
@@ -28,6 +28,10 @@ class Movie(IntIdPkMixin, Base):
     poster_url: Mapped[str | None] = mapped_column(String(IMAGE_URL_MAX_LEN))
 
     shots: Mapped[list["MovieShot"]] = relationship(
+        back_populates="movie",
+        cascade="all, delete-orphan"
+    )
+    person_associations: Mapped[list["MoviePersonAssociation"]] = relationship(
         back_populates="movie",
         cascade="all, delete-orphan"
     )
