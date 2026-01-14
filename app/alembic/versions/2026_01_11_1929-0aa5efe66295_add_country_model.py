@@ -20,15 +20,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "countrys",
+        "countries",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("slug", sa.String(length=100), nullable=False),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_countrys")),
-        sa.UniqueConstraint("name", name=op.f("uq_countrys_name")),
-        sa.UniqueConstraint("slug", name=op.f("uq_countrys_slug")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_countries")),
+        sa.UniqueConstraint("name", name=op.f("uq_countries_name")),
+        sa.UniqueConstraint("slug", name=op.f("uq_countries_slug")),
     )
 
 
 def downgrade() -> None:
-    op.drop_table("countrys")
+    op.drop_table("countries")
