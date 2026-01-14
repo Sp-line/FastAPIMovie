@@ -9,7 +9,7 @@ from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from core.models import MovieShot, MoviePersonAssociation, Genre
+    from core.models import MovieShot, MoviePersonAssociation, Genre, Country
 
 
 class Movie(IntIdPkMixin, Base):
@@ -37,5 +37,9 @@ class Movie(IntIdPkMixin, Base):
     )
     genres: Mapped[list["Genre"]] = relationship(
         secondary="movie_genres",
+        back_populates="movies"
+    )
+    countries: Mapped[list["Country"]] = relationship(
+        secondary="movie_country_associations",
         back_populates="movies"
     )
