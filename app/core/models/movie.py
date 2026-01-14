@@ -9,7 +9,7 @@ from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from core.models import MovieShot, MoviePersonAssociation
+    from core.models import MovieShot, MoviePersonAssociation, Genre
 
 
 class Movie(IntIdPkMixin, Base):
@@ -34,4 +34,8 @@ class Movie(IntIdPkMixin, Base):
     person_associations: Mapped[list["MoviePersonAssociation"]] = relationship(
         back_populates="movie",
         cascade="all, delete-orphan"
+    )
+    genres: Mapped[list["Genre"]] = relationship(
+        secondary="movie_genres",
+        back_populates="movies"
     )
