@@ -31,6 +31,19 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await self.session.refresh(obj)
         return obj
 
+    async def bulk_create(self, data: list[CreateSchemaType]) -> list[ModelType]:
+        if not data:
+            return []
+
+        objs = [
+            self.model(**item.model_dump())
+            for item in data
+        ]
+
+        self.session.add_all(objs)
+        await self.session.flush()
+        return objs
+
     async def update(self, obj_id: int, data: UpdateSchemaType) -> ModelType | None:
         update_data = data.model_dump(exclude_unset=True)
         if not update_data:
