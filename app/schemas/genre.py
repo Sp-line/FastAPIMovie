@@ -2,13 +2,12 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from constants import GENRE_NAME_MAX_LEN, GENRE_SLUG_MAX_LEN
-from constants.genre import GENRE_NAME_MIN_LEN, GENRE_SLUG_MIN_LEN
+from constants import GenreLimits
 
 
 class GenreBase(BaseModel):
-    name: Annotated[str, Field(min_length=GENRE_NAME_MIN_LEN, max_length=GENRE_NAME_MAX_LEN)]
-    slug: Annotated[str, Field(min_length=GENRE_SLUG_MIN_LEN, max_length=GENRE_SLUG_MAX_LEN)]
+    name: Annotated[str, Field(min_length=GenreLimits.NAME_MIN, max_length=GenreLimits.NAME_MAX)]
+    slug: Annotated[str, Field(min_length=GenreLimits.SLUG_MIN, max_length=GenreLimits.SLUG_MAX)]
 
 
 class GenreCreate(GenreBase):
@@ -16,8 +15,8 @@ class GenreCreate(GenreBase):
 
 
 class GenreUpdate(BaseModel):
-    name: Annotated[str | None, Field(min_length=GENRE_NAME_MIN_LEN, max_length=GENRE_NAME_MAX_LEN)] = None
-    slug: Annotated[str | None, Field(min_length=GENRE_SLUG_MIN_LEN, max_length=GENRE_SLUG_MAX_LEN)] = None
+    name: Annotated[str | None, Field(min_length=GenreLimits.NAME_MIN, max_length=GenreLimits.NAME_MAX)] = None
+    slug: Annotated[str | None, Field(min_length=GenreLimits.SLUG_MIN, max_length=GenreLimits.SLUG_MAX)] = None
 
 
 class GenreRead(GenreBase):

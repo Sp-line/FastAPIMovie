@@ -1,4 +1,6 @@
-GENRE_NAME_MAX_LEN = 50
-GENRE_SLUG_MAX_LEN = 50
-GENRE_NAME_MIN_LEN = 3
-GENRE_SLUG_MIN_LEN = 3
+class GenreLimits:
+    NAME_MAX: int = 50
+    NAME_MIN: int = 3
+
+    SLUG_MAX: int = 50
+    SLUG_MIN: int = 3

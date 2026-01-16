@@ -11,7 +11,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-from constants.genre import GENRE_NAME_MIN_LEN, GENRE_SLUG_MIN_LEN
+from constants.genre import GenreLimits
 
 revision: str = "acba0521b71f"
 down_revision: Union[str, None] = "8108e91f6f75"
@@ -23,12 +23,12 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_genre_name_min_len",
         "genres",
-        sa.text(f"char_length(name) >= {GENRE_NAME_MIN_LEN}")
+        sa.text(f"char_length(name) >= {GenreLimits.NAME_MIN}"),
     )
     op.create_check_constraint(
         "check_genre_slug_min_len",
         "genres",
-        sa.text(f"char_length(slug) >= {GENRE_SLUG_MIN_LEN}")
+        sa.text(f"char_length(slug) >= {GenreLimits.SLUG_MIN}"),
     )
 
 
