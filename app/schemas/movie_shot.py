@@ -17,11 +17,18 @@ class MovieShotCreate(MovieShotBase):
 
 class MovieShotUpdate(BaseModel):
     image_url: Annotated[str | None, Field(max_length=IMAGE_URL_MAX_LEN)] = None
-    caption: Annotated[str | None, Field(min_length=MOVIE_SHOT_CAPTION_URL_MIN_LEN, max_length=MOVIE_SHOT_CAPTION_URL_MAX_LEN)] = None
+    caption: Annotated[
+        str | None, Field(min_length=MOVIE_SHOT_CAPTION_URL_MIN_LEN, max_length=MOVIE_SHOT_CAPTION_URL_MAX_LEN)] = None
 
 
 class MovieShotRead(MovieShotBase):
     id: int
     movie_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieRelatedShotRead(MovieShotBase):
+    id: int
 
     model_config = ConfigDict(from_attributes=True)
