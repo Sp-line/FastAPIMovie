@@ -11,8 +11,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-from constants import MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, MOVIE_RELEASE_YEAR_MIN_VALUE, \
-    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN, ImageUrlLimits
+from constants import ImageUrlLimits, MovieLimits
 
 revision: str = "2aa023a732c4"
 down_revision: Union[str, None] = "908cb82f5b8b"
@@ -24,22 +23,22 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_duration_limits",
         "movies",
-        sa.text(f"duration >= {MOVIE_DURATION_MIN_VALUE} AND duration <= {MOVIE_DURATION_MAX_VALUE}")
+        sa.text(f"duration >= {MovieLimits.DURATION_MIN} AND duration <= {MovieLimits.DURATION_MAX}")
     )
     op.create_check_constraint(
         "check_release_year_min",
         "movies",
-        sa.text(f"release_year >= {MOVIE_RELEASE_YEAR_MIN_VALUE}")
+        sa.text(f"release_year >= {MovieLimits.RELEASE_YEAR_MIN}")
     )
     op.create_check_constraint(
         "check_movie_title_not_empty",
         "movies",
-        sa.text(f"char_length(title) > {MOVIE_TITLE_MIN_LEN}")
+        sa.text(f"char_length(title) > {MovieLimits.TITLE_MIN}")
     )
     op.create_check_constraint(
         "check_movie_slug_not_empty",
         "movies",
-        sa.text(f"char_length(slug) > {MOVIE_SLUG_MIN_LEN}")
+        sa.text(f"char_length(slug) > {MovieLimits.SLUG_MIN}")
     )
     op.create_check_constraint(
         "check_movie_poster_url_not_empty",
@@ -49,7 +48,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_movie_age_rating_not_empty",
         "movies",
-        sa.text(f"char_length(age_rating) > {MOVIE_AGE_RATING_MIN_LEN}")
+        sa.text(f"char_length(age_rating) > {MovieLimits.AGE_RATING_MIN}")
     )
 
 

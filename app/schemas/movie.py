@@ -3,10 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from constants import MOVIE_TITLE_MAX_LEN, MOVIE_SLUG_MAX_LEN, MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, \
-    MOVIE_AGE_RATING_MAX_LEN, ImageUrlLimits
-from constants.movie import MOVIE_RELEASE_YEAR_MIN_VALUE, MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, \
-    MOVIE_AGE_RATING_MIN_LEN
+from constants import MovieLimits, ImageUrlLimits
 from schemas.country import CountryRead
 from schemas.genre import GenreRead
 from schemas.movie_person import MoviePersonRelatedRead
@@ -14,13 +11,13 @@ from schemas.movie_shot import MovieRelatedShotRead
 
 
 class MovieSummaryBase(BaseModel):
-    title: Annotated[str, Field(min_length=MOVIE_TITLE_MIN_LEN, max_length=MOVIE_TITLE_MAX_LEN)]
-    slug: Annotated[str, Field(min_length=MOVIE_SLUG_MIN_LEN, max_length=MOVIE_SLUG_MAX_LEN)]
-    duration: Annotated[int, Field(ge=MOVIE_DURATION_MIN_VALUE, le=MOVIE_DURATION_MAX_VALUE)]
-    release_year: Annotated[int, Field(ge=MOVIE_RELEASE_YEAR_MIN_VALUE)]
+    title: Annotated[str, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)]
+    slug: Annotated[str, Field(min_length=MovieLimits.SLUG_MIN, max_length=MovieLimits.SLUG_MAX)]
+    duration: Annotated[int, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)]
+    release_year: Annotated[int, Field(ge=MovieLimits.RELEASE_YEAR_MIN)]
     poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
     age_rating: Annotated[
-        str | None, Field(min_length=MOVIE_AGE_RATING_MIN_LEN, max_length=MOVIE_AGE_RATING_MAX_LEN)] = None
+        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
 
 
 class MovieBase(MovieSummaryBase):
@@ -33,14 +30,14 @@ class MovieCreate(MovieBase):
 
 
 class MovieUpdate(BaseModel):
-    title: Annotated[str | None, Field(min_length=MOVIE_TITLE_MIN_LEN, max_length=MOVIE_TITLE_MAX_LEN)] = None
-    slug: Annotated[str | None, Field(min_length=MOVIE_SLUG_MIN_LEN, max_length=MOVIE_SLUG_MAX_LEN)] = None
+    title: Annotated[str | None, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)] = None
+    slug: Annotated[str | None, Field(min_length=MovieLimits.SLUG_MIN, max_length=MovieLimits.SLUG_MAX)] = None
     description: str | None = None
-    duration: Annotated[int | None, Field(ge=MOVIE_DURATION_MIN_VALUE, le=MOVIE_DURATION_MAX_VALUE)] = None
+    duration: Annotated[int | None, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)] = None
     age_rating: Annotated[
-        str | None, Field(min_length=MOVIE_AGE_RATING_MIN_LEN, max_length=MOVIE_AGE_RATING_MAX_LEN)] = None
+        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
     premiere_date: datetime | None = None
-    release_year: Annotated[int | None, Field(ge=MOVIE_RELEASE_YEAR_MIN_VALUE)] = None
+    release_year: Annotated[int | None, Field(ge=MovieLimits.RELEASE_YEAR_MIN)] = None
     poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
 
 
