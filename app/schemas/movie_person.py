@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from constants import MovieRoleType
+from schemas.person import PersonRead
 
 
 class MoviePersonBase(BaseModel):
@@ -22,3 +23,7 @@ class MoviePersonRead(MoviePersonBase):
     person_id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MoviePersonRelatedRead(MoviePersonBase):
+    person: PersonRead
