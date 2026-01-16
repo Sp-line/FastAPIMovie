@@ -3,8 +3,8 @@ from typing import Generic, Type, Sequence
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from types.models import ModelType
-from types.schemas import CreateSchemaType, UpdateSchemaType
+from app_types.models import ModelType
+from app_types.schemas import CreateSchemaType, UpdateSchemaType
 
 
 class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
