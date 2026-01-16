@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String, Text, SmallInteger, DateTime, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from constants import MOVIE_SLUG_MAX_LEN, MOVIE_TITLE_MAX_LEN, MOVIE_AGE_RATING_MAX_LEN, IMAGE_URL_MAX_LEN
+from constants import MOVIE_SLUG_MAX_LEN, MOVIE_TITLE_MAX_LEN, MOVIE_AGE_RATING_MAX_LEN, IMAGE_URL_MAX_LEN, \
+    MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, IMAGE_URL_MIN_LEN, MOVIE_RELEASE_YEAR_MIN_VALUE, \
+    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
@@ -14,8 +16,30 @@ if TYPE_CHECKING:
 
 class Movie(IntIdPkMixin, Base):
     __table_args__ = (
-        CheckConstraint('duration > 0 AND duration <= 600', name='check_duration_limits'),
-        CheckConstraint('release_year >= 1800', name='check_release_year_min')
+        CheckConstraint(
+            f"duration >= {MOVIE_DURATION_MIN_VALUE} AND duration <= {MOVIE_DURATION_MAX_VALUE}",
+            name='check_duration_limits'
+        ),
+        CheckConstraint(
+            f"release_year >= {MOVIE_RELEASE_YEAR_MIN_VALUE}",
+            name='check_release_year_min'
+        ),
+        CheckConstraint(
+            f"char_length(title) > {MOVIE_TITLE_MIN_LEN}",
+            name="check_movie_title_not_empty"
+        ),
+        CheckConstraint(
+            f"char_length(slug) > {MOVIE_SLUG_MIN_LEN}",
+            name="check_movie_slug_not_empty"
+        ),
+        CheckConstraint(
+            f"char_length(poster_url) > {IMAGE_URL_MIN_LEN}",
+            name="check_movie_poster_url_not_empty"
+        ),
+        CheckConstraint(
+            f"char_length(age_rating) > {MOVIE_AGE_RATING_MIN_LEN}",
+            name="check_movie_age_rating_not_empty"
+        ),
     )
 
     slug: Mapped[str] = mapped_column(String(MOVIE_SLUG_MAX_LEN), unique=True)
