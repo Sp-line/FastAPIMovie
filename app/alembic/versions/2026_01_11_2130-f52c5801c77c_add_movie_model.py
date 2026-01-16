@@ -30,14 +30,6 @@ def upgrade() -> None:
         sa.Column("premiere_date", sa.DateTime(timezone=True), nullable=True),
         sa.Column("release_year", sa.SmallInteger(), nullable=False),
         sa.Column("poster_url", sa.String(length=1024), nullable=True),
-        sa.CheckConstraint(
-            "duration > 0 AND duration <= 600",
-            name=op.f("ck_movies_check_duration_limits"),
-        ),
-        sa.CheckConstraint(
-            "release_year >= 1800",
-            name=op.f("ck_movies_check_release_year_min"),
-        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_movies")),
         sa.UniqueConstraint("slug", name=op.f("uq_movies_slug")),
     )
