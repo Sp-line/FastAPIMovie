@@ -9,26 +9,26 @@ from types.schemas import CreateSchemaType, UpdateSchemaType
 
 class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType], session: AsyncSession) -> None:
-        self.model = model
-        self.session = session
+        self._model = model
+        self._session = session
 
     async def get_all(
             self,
             skip: int = 0,
             limit: int = 100,
     ) -> Sequence[ModelType]:
-        stmt = select(self.model).offset(skip).limit(limit)
-        result = await self.session.execute(stmt)
+        stmt = select(self._model).offset(skip).limit(limit)
+        result = await self._session.execute(stmt)
         return result.scalars().all()
 
     async def get_by_id(self, obj_id: int) -> ModelType | None:
-        return await self.session.get(self.model, obj_id)
+        return await self._session.get(self._model, obj_id)
 
     async def create(self, data: CreateSchemaType) -> ModelType:
-        obj = self.model(**data.model_dump())
-        self.session.add(obj)
-        await self.session.flush()
-        await self.session.refresh(obj)
+        obj = self._model(**data.model_dump())
+        self._session.add(obj)
+        await self._session.flush()
+        await self._session.refresh(obj)
         return obj
 
     async def bulk_create(self, data: list[CreateSchemaType]) -> list[ModelType]:
@@ -36,12 +36,12 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             return []
 
         objs = [
-            self.model(**item.model_dump())
+            self._model(**item.model_dump())
             for item in data
         ]
 
-        self.session.add_all(objs)
-        await self.session.flush()
+        self._session.add_all(objs)
+        await self._session.flush()
         return objs
 
     async def update(self, obj_id: int, data: UpdateSchemaType) -> ModelType | None:
@@ -50,15 +50,15 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             return await self.get_by_id(obj_id)
 
         stmt = (
-            update(self.model)
-            .where(self.model.id == obj_id)
+            update(self._model)
+            .where(self._model.id == obj_id)
             .values(**update_data)
-            .returning(self.model)
+            .returning(self._model)
         )
-        result = await self.session.execute(stmt)
+        result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def delete(self, obj_id: int) -> bool:
-        stmt = delete(self.model).where(self.model.id == obj_id)
-        result = await self.session.execute(stmt)
+        stmt = delete(self._model).where(self._model.id == obj_id)
+        result = await self._session.execute(stmt)
         return result.rowcount > 0  # type: ignore
