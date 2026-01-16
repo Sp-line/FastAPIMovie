@@ -2,13 +2,13 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from constants import MOVIE_SHOT_CAPTION_URL_MAX_LEN, ImageUrlLimits
-from constants.movie_shot import MOVIE_SHOT_CAPTION_URL_MIN_LEN
+from constants import ImageUrlLimits, MovieShotLimits
 
 
 class MovieShotBase(BaseModel):
     image_url: Annotated[str, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)]
-    caption: Annotated[str, Field(min_length=MOVIE_SHOT_CAPTION_URL_MIN_LEN, max_length=MOVIE_SHOT_CAPTION_URL_MAX_LEN)]
+    caption: Annotated[
+        str, Field(min_length=MovieShotLimits.CAPTION_URL_MIN, max_length=MovieShotLimits.CAPTION_URL_MAX)]
 
 
 class MovieShotCreate(MovieShotBase):
@@ -18,7 +18,8 @@ class MovieShotCreate(MovieShotBase):
 class MovieShotUpdate(BaseModel):
     image_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
     caption: Annotated[
-        str | None, Field(min_length=MOVIE_SHOT_CAPTION_URL_MIN_LEN, max_length=MOVIE_SHOT_CAPTION_URL_MAX_LEN)] = None
+        str | None, Field(min_length=MovieShotLimits.CAPTION_URL_MIN,
+                          max_length=MovieShotLimits.CAPTION_URL_MAX)] = None
 
 
 class MovieShotRead(MovieShotBase):

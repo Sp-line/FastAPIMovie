@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String, ForeignKey, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from constants import MOVIE_SHOT_CAPTION_URL_MAX_LEN, MOVIE_SHOT_CAPTION_URL_MIN_LEN, ImageUrlLimits
+from constants import MovieShotLimits, ImageUrlLimits
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class MovieShot(IntIdPkMixin, Base):
     __table_args__ = (
         CheckConstraint(
-            f"char_length(caption) >= {MOVIE_SHOT_CAPTION_URL_MIN_LEN}",
+            f"char_length(caption) >= {MovieShotLimits.CAPTION_URL_MIN}",
             name="check_movie_shot_caption_min_len"
         ),
         CheckConstraint(
@@ -24,7 +24,7 @@ class MovieShot(IntIdPkMixin, Base):
     )
 
     image_url: Mapped[str] = mapped_column(String(ImageUrlLimits.MAX))
-    caption: Mapped[str] = mapped_column(String(MOVIE_SHOT_CAPTION_URL_MAX_LEN))
+    caption: Mapped[str] = mapped_column(String(MovieShotLimits.CAPTION_URL_MAX))
 
     movie_id: Mapped[int] = mapped_column(ForeignKey("movies.id", ondelete="CASCADE"))
     movie: Mapped["Movie"] = relationship(back_populates="shots")
