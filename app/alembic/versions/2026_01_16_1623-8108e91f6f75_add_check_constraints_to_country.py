@@ -11,7 +11,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-from constants import COUNTRY_NAME_MIN_LEN, COUNTRY_SLUG_MIN_LEN
+from constants import CountryLimits
 
 revision: str = "8108e91f6f75"
 down_revision: Union[str, None] = "195838e2bbe3"
@@ -23,12 +23,12 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_country_name_min_len",
         "countries",
-        sa.text(f"char_length(name) >= {COUNTRY_NAME_MIN_LEN}")
+        sa.text(f"char_length(name) >= {CountryLimits.NAME_MIN}")
     )
     op.create_check_constraint(
         "check_country_slug_min_len",
         "countries",
-        sa.text(f"char_length(slug) >= {COUNTRY_SLUG_MIN_LEN}")
+        sa.text(f"char_length(slug) >= {CountryLimits.SLUG_MIN}")
     )
 
 
