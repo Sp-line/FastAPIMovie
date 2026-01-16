@@ -1,5 +1,5 @@
 class CountryLimits:
-    NAME_MAX = 100
-    NAME_MIN = 3
-    SLUG_MAX = 100
-    SLUG_MIN = 3
+    NAME_MAX: int = 100
+    NAME_MIN: int = 3
+    SLUG_MAX: int = 100
+    SLUG_MIN: int = 3

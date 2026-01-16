@@ -1,3 +1,3 @@
 class ImageUrlLimits:
-    MAX = 1024
-    MIN = 1
+    MAX: int = 1024
+    MIN: int = 1
