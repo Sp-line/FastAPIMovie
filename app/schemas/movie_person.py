@@ -12,8 +12,8 @@ class MoviePersonCreate(MoviePersonBase):
     person_id: int
 
 
-class MoviePersonUpdate(BaseModel):
-    role: MovieRoleType
+class MoviePersonUpdate(MoviePersonBase):
+    pass
 
 
 class MoviePersonRead(MoviePersonBase):
