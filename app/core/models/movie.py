@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String, Text, SmallInteger, DateTime, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from constants import MOVIE_SLUG_MAX_LEN, MOVIE_TITLE_MAX_LEN, MOVIE_AGE_RATING_MAX_LEN, IMAGE_URL_MAX_LEN, \
-    MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, IMAGE_URL_MIN_LEN, MOVIE_RELEASE_YEAR_MIN_VALUE, \
-    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN
+from constants import MOVIE_SLUG_MAX_LEN, MOVIE_TITLE_MAX_LEN, MOVIE_AGE_RATING_MAX_LEN, \
+    MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, MOVIE_RELEASE_YEAR_MIN_VALUE, \
+    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN, ImageUrlLimits
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
@@ -33,7 +33,7 @@ class Movie(IntIdPkMixin, Base):
             name="check_movie_slug_not_empty"
         ),
         CheckConstraint(
-            f"char_length(poster_url) > {IMAGE_URL_MIN_LEN}",
+            f"char_length(poster_url) > {ImageUrlLimits.MIN}",
             name="check_movie_poster_url_not_empty"
         ),
         CheckConstraint(
@@ -49,7 +49,7 @@ class Movie(IntIdPkMixin, Base):
     age_rating: Mapped[str | None] = mapped_column(String(MOVIE_AGE_RATING_MAX_LEN))
     premiere_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     release_year: Mapped[int] = mapped_column(SmallInteger)
-    poster_url: Mapped[str | None] = mapped_column(String(IMAGE_URL_MAX_LEN))
+    poster_url: Mapped[str | None] = mapped_column(String(ImageUrlLimits.MAX))
 
     shots: Mapped[list["MovieShot"]] = relationship(
         back_populates="movie",

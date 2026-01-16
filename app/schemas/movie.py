@@ -4,8 +4,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import MOVIE_TITLE_MAX_LEN, MOVIE_SLUG_MAX_LEN, MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, \
-    MOVIE_AGE_RATING_MAX_LEN, IMAGE_URL_MAX_LEN
-from constants.base import IMAGE_URL_MIN_LEN
+    MOVIE_AGE_RATING_MAX_LEN, ImageUrlLimits
 from constants.movie import MOVIE_RELEASE_YEAR_MIN_VALUE, MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, \
     MOVIE_AGE_RATING_MIN_LEN
 from schemas.country import CountryRead
@@ -19,7 +18,7 @@ class MovieSummaryBase(BaseModel):
     slug: Annotated[str, Field(min_length=MOVIE_SLUG_MIN_LEN, max_length=MOVIE_SLUG_MAX_LEN)]
     duration: Annotated[int, Field(ge=MOVIE_DURATION_MIN_VALUE, le=MOVIE_DURATION_MAX_VALUE)]
     release_year: Annotated[int, Field(ge=MOVIE_RELEASE_YEAR_MIN_VALUE)]
-    poster_url: Annotated[str | None, Field(min_length=IMAGE_URL_MIN_LEN, max_length=IMAGE_URL_MAX_LEN)] = None
+    poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
     age_rating: Annotated[
         str | None, Field(min_length=MOVIE_AGE_RATING_MIN_LEN, max_length=MOVIE_AGE_RATING_MAX_LEN)] = None
 
@@ -42,7 +41,7 @@ class MovieUpdate(BaseModel):
         str | None, Field(min_length=MOVIE_AGE_RATING_MIN_LEN, max_length=MOVIE_AGE_RATING_MAX_LEN)] = None
     premiere_date: datetime | None = None
     release_year: Annotated[int | None, Field(ge=MOVIE_RELEASE_YEAR_MIN_VALUE)] = None
-    poster_url: Annotated[str | None, Field(min_length=IMAGE_URL_MIN_LEN, max_length=IMAGE_URL_MAX_LEN)] = None
+    poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
 
 
 class MovieRead(MovieBase):

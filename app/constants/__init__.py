@@ -1,6 +1,4 @@
 __all__ = (
-    "IMAGE_URL_MAX_LEN",
-    "IMAGE_URL_MIN_LEN",
     "COUNTRY_NAME_MAX_LEN",
     "COUNTRY_NAME_MIN_LEN",
     "COUNTRY_SLUG_MAX_LEN",
@@ -30,9 +28,11 @@ __all__ = (
     "PERSON_PHOTO_URL_REQUIRED",
     "MOVIE_PREMIER_DATE_REQUIRED",
     "MovieRoleType",
+
+    "ImageUrlLimits",
 )
 
-from constants.base import IMAGE_URL_MAX_LEN, IMAGE_URL_MIN_LEN
+from constants.base import ImageUrlLimits
 from constants.country import COUNTRY_NAME_MAX_LEN, COUNTRY_SLUG_MAX_LEN, COUNTRY_NAME_MIN_LEN, COUNTRY_SLUG_MIN_LEN
 from constants.genre import GENRE_NAME_MAX_LEN, GENRE_SLUG_MAX_LEN, GENRE_NAME_MIN_LEN, GENRE_SLUG_MIN_LEN
 from constants.movie import MOVIE_TITLE_MAX_LEN, MOVIE_DESCRIPTION_REQUIRED, MOVIE_SLUG_MAX_LEN, \

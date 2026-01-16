@@ -1,2 +1,3 @@
-IMAGE_URL_MAX_LEN = 1024
-IMAGE_URL_MIN_LEN = 1
+class ImageUrlLimits:
+    MAX = 1024
+    MIN = 1

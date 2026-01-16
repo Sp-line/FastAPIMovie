@@ -11,7 +11,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-from constants import PERSON_FULL_NAME_MIN_LEN, PERSON_SLUG_MIN_LEN, IMAGE_URL_MIN_LEN
+from constants import PERSON_FULL_NAME_MIN_LEN, PERSON_SLUG_MIN_LEN, ImageUrlLimits
 
 revision: str = "908cb82f5b8b"
 down_revision: Union[str, None] = "0f441058ac25"
@@ -33,7 +33,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_person_photo_url_not_empty",
         "persons",
-        sa.text(f"char_length(photo_url) > {IMAGE_URL_MIN_LEN}")
+        sa.text(f"char_length(photo_url) > {ImageUrlLimits.MIN}")
     )
 
 

@@ -12,8 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 from constants import MOVIE_DURATION_MIN_VALUE, MOVIE_DURATION_MAX_VALUE, MOVIE_RELEASE_YEAR_MIN_VALUE, \
-    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, IMAGE_URL_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN
-
+    MOVIE_TITLE_MIN_LEN, MOVIE_SLUG_MIN_LEN, MOVIE_AGE_RATING_MIN_LEN, ImageUrlLimits
 
 revision: str = "2aa023a732c4"
 down_revision: Union[str, None] = "908cb82f5b8b"
@@ -45,7 +44,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         "check_movie_poster_url_not_empty",
         "movies",
-        sa.text(f"char_length(poster_url) > {IMAGE_URL_MIN_LEN}")
+        sa.text(f"char_length(poster_url) > {ImageUrlLimits.MIN}")
     )
     op.create_check_constraint(
         "check_movie_age_rating_not_empty",
