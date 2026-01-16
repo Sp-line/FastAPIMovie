@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from constants import GENRE_NAME_MAX_LEN, GENRE_SLUG_MAX_LEN
-from constants.genre import GENRE_NAME_MIN_LEN, GENRE_SLUG_MIN_LEN
+from constants import GENRE_NAME_MAX_LEN, GENRE_SLUG_MAX_LEN, GENRE_NAME_MIN_LEN, GENRE_SLUG_MIN_LEN
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
