@@ -2,13 +2,12 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from constants import PERSON_FULL_NAME_MAX_LEN, PERSON_SLUG_MAX_LEN, ImageUrlLimits
-from constants.person import PERSON_FULL_NAME_MIN_LEN, PERSON_SLUG_MIN_LEN
+from constants import ImageUrlLimits, PersonLimits
 
 
 class PersonBase(BaseModel):
-    full_name: Annotated[str, Field(min_length=PERSON_FULL_NAME_MIN_LEN, max_length=PERSON_FULL_NAME_MAX_LEN)]
-    slug: Annotated[str, Field(min_length=PERSON_SLUG_MIN_LEN, max_length=PERSON_SLUG_MAX_LEN)]
+    full_name: Annotated[str, Field(min_length=PersonLimits.FULL_NAME_MIN, max_length=PersonLimits.FULL_NAME_MIN)]
+    slug: Annotated[str, Field(min_length=PersonLimits.SLUG_MIN, max_length=PersonLimits.SLUG_MAX)]
     photo_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
 
 
@@ -18,8 +17,8 @@ class PersonCreate(PersonBase):
 
 class PersonUpdate(BaseModel):
     full_name: Annotated[
-        str | None, Field(min_length=PERSON_FULL_NAME_MIN_LEN, max_length=PERSON_FULL_NAME_MAX_LEN)] = None
-    slug: Annotated[str | None, Field(min_length=PERSON_SLUG_MIN_LEN, max_length=PERSON_SLUG_MAX_LEN)] = None
+        str | None, Field(min_length=PersonLimits.FULL_NAME_MIN, max_length=PersonLimits.FULL_NAME_MIN)] = None
+    slug: Annotated[str | None, Field(min_length=PersonLimits.SLUG_MIN, max_length=PersonLimits.SLUG_MAX)] = None
     photo_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
 
 
