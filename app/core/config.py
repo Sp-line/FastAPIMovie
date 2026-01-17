@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from pydantic import PostgresDsn
 from pydantic_settings import (
     BaseSettings,
@@ -36,6 +36,14 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class S3Config(BaseModel):
+    endpoint_url: HttpUrl
+    access_key: str
+    secret_key: str
+    bucket_name: str
+    region: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -47,6 +55,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    s3: S3Config
 
 
 settings = Settings()
