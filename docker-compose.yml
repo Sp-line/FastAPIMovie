@@ -2,6 +2,7 @@ services:
 
   pg:
     image: postgres
+    container_name: db_postgres
     env_file:
       - app/.env
     ports:
