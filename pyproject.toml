@@ -12,6 +12,7 @@ asyncpg = "^0.29.0"
 alembic = "^1.13.1"
 orjson = "^3.11.5"
 aioboto3 = "^15.5.0"
+types-aiobotocore = {extras = ["s3"], version = "^3.1.0"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
