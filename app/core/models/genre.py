@@ -27,6 +27,6 @@ class Genre(IntIdPkMixin, Base):
     slug: Mapped[str] = mapped_column(String(GenreLimits.SLUG_MAX), unique=True)
 
     movies: Mapped[list["Movie"]] = relationship(
-        secondary="movie_genres",
+        secondary="movie_genre_associations",
         back_populates="genres"
     )

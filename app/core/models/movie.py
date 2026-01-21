@@ -58,7 +58,7 @@ class Movie(IntIdPkMixin, Base):
         cascade="all, delete-orphan"
     )
     genres: Mapped[list["Genre"]] = relationship(
-        secondary="movie_genres",
+        secondary="movie_genre_associations",
         back_populates="movies"
     )
     countries: Mapped[list["Country"]] = relationship(
