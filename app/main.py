@@ -8,13 +8,18 @@ from core.config import settings
 
 from api import router as api_router
 from core.models import db_helper
+from storage.s3 import s3_helper
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
+    await s3_helper.connect()
+
     yield
+
     # shutdown
+    await s3_helper.close()
     await db_helper.dispose()
 
 
