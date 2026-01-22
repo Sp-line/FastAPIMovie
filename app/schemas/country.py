@@ -10,16 +10,27 @@ class CountryBase(BaseModel):
     slug: Annotated[str, Field(min_length=CountryLimits.SLUG_MIN, max_length=CountryLimits.SLUG_MAX)]
 
 
-class CountryCreate(CountryBase):
+class CountryCreateDB(CountryBase):
     pass
 
 
-class CountryUpdate(BaseModel):
-    name: Annotated[str | None, Field(min_length=CountryLimits.NAME_MIN, max_length=CountryLimits.NAME_MAX)] = None
-    slug: Annotated[str | None, Field(min_length=CountryLimits.SLUG_MIN, max_length=CountryLimits.SLUG_MAX)] = None
+class CountryCreateReq(CountryBase):
+    pass
 
 
 class CountryRead(CountryBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CountryUpdateBase(BaseModel):
+    name: Annotated[str | None, Field(min_length=CountryLimits.NAME_MIN, max_length=CountryLimits.NAME_MAX)] = None
+
+
+class CountryUpdateDB(CountryUpdateBase):
+    slug: Annotated[str | None, Field(min_length=CountryLimits.SLUG_MIN, max_length=CountryLimits.SLUG_MAX)] = None
+
+
+class CountryUpdateReq(CountryUpdateBase):
+    pass
