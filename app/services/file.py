@@ -54,6 +54,6 @@ class FileService(Generic[ReadSchemaType]):
                 new_obj = self._read_schema_type.model_validate(await self._repository.update(obj_id, update_data))
 
         if old_url:
-            await self._files.delete_file(old_url.removeprefix(base_url))  # todo delete_file task
+            await self._files.delete_file(old_url.removeprefix(base_url))
 
         return new_obj
