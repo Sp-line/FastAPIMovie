@@ -1,0 +1,25 @@
+from pydantic import BaseModel, ConfigDict
+
+
+class MovieGenreCompositeId(BaseModel):
+    genre_id: int
+    movie_id: int
+
+
+class MovieGenreBase(MovieGenreCompositeId):
+    pass
+
+
+class MovieGenreCreate(MovieGenreBase):
+    pass
+
+
+class MovieGenreUpdate(BaseModel):
+    genre_id: int | None = None
+    movie_id: int | None = None
+
+
+class MovieGenreRead(MovieGenreBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
