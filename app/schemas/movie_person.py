@@ -4,26 +4,32 @@ from constants import MovieRoleType
 from schemas.person import PersonRead
 
 
-class MoviePersonBase(BaseModel):
+class MoviePersonCompositeId(BaseModel):
+    movie_id: int
+    person_id: int
+
+
+class MoviePersonBase(MoviePersonCompositeId):
     role: MovieRoleType
 
 
 class MoviePersonCreate(MoviePersonBase):
-    movie_id: int
-    person_id: int
-
-
-class MoviePersonUpdate(MoviePersonBase):
     pass
+
+
+class MoviePersonUpdate(BaseModel):
+    movie_id: int | None = None
+    person_id: int | None = None
+    role: MovieRoleType | None = None
 
 
 class MoviePersonRead(MoviePersonBase):
     id: int
-    movie_id: int
-    person_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class MoviePersonRelatedRead(MoviePersonBase):
     person: PersonRead
+
+    model_config = ConfigDict(from_attributes=True)
