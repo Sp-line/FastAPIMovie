@@ -25,23 +25,46 @@ class MovieBase(MovieSummaryBase):
     premiere_date: datetime | None = None
 
 
-class MovieCreate(MovieBase):
+class MovieRead(MovieBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCreateDB(MovieBase):
     pass
 
 
-class MovieUpdate(BaseModel):
-    title: Annotated[str | None, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)] = None
-    slug: Annotated[str | None, Field(min_length=MovieLimits.SLUG_MIN, max_length=MovieLimits.SLUG_MAX)] = None
-    description: str | None = None
-    duration: Annotated[int | None, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)] = None
+class MovieCreateReq(BaseModel):
+    title: Annotated[str, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)]
+    duration: Annotated[int, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)]
+    release_year: Annotated[int, Field(ge=MovieLimits.RELEASE_YEAR_MIN)]
     age_rating: Annotated[
         str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
+    description: str | None = None
     premiere_date: datetime | None = None
+
+
+class MovieUpdateBase(BaseModel):
+    title: Annotated[str | None, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)] = None
+    duration: Annotated[int | None, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)] = None
     release_year: Annotated[int | None, Field(ge=MovieLimits.RELEASE_YEAR_MIN)] = None
+    age_rating: Annotated[
+        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
+    description: str | None = None
+    premiere_date: datetime | None = None
+
+
+class MovieUpdateDB(MovieUpdateBase):
+    slug: Annotated[str | None, Field(min_length=MovieLimits.SLUG_MIN, max_length=MovieLimits.SLUG_MAX)] = None
     poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
 
 
-class MovieRead(MovieBase):
+class MovieUpdateReq(MovieUpdateBase):
+    pass
+
+
+class MovieDetail(MovieBase):
     id: int
 
     genres: Annotated[list[GenreRead], Field(default_factory=list)]
