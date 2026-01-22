@@ -1,6 +1,7 @@
 from typing import Generic, Type, Sequence
 
 from sqlalchemy import select, update, delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_types.models import ModelType
@@ -27,7 +28,13 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def create(self, data: CreateSchemaType) -> ModelType:
         obj = self._model(**data.model_dump())
         self._session.add(obj)
-        await self._session.flush()
+
+        try:
+            await self._session.flush()
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
         await self._session.refresh(obj)
         return obj
 
@@ -41,7 +48,13 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         ]
 
         self._session.add_all(objs)
-        await self._session.flush()
+
+        try:
+            await self._session.flush()
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
         return objs
 
     async def update(self, obj_id: int, data: UpdateSchemaType) -> ModelType | None:
@@ -55,10 +68,28 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             .values(**update_data)
             .returning(self._model)
         )
-        result = await self._session.execute(stmt)
+
+        try:
+            result = await self._session.execute(stmt)
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
         return result.scalar_one_or_none()
 
     async def delete(self, obj_id: int) -> bool:
         stmt = delete(self._model).where(self._model.id == obj_id)
+
+        try:
+            result = await self._session.execute(stmt)
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
+        return result.rowcount > 0  # type: ignore
+
+    def _handle_integrity_error(self, exc: IntegrityError) -> None:
+        pass
+
         result = await self._session.execute(stmt)
         return result.rowcount > 0  # type: ignore
