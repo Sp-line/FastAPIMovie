@@ -11,15 +11,25 @@ class MovieShotBase(BaseModel):
         str, Field(min_length=MovieShotLimits.CAPTION_URL_MIN, max_length=MovieShotLimits.CAPTION_URL_MAX)]
 
 
-class MovieShotCreate(MovieShotBase):
+class MovieShotCreateDB(MovieShotBase):
     movie_id: int
 
 
-class MovieShotUpdate(BaseModel):
-    image_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
+class MovieShotCreateReq(BaseModel):
     caption: Annotated[
-        str | None, Field(min_length=MovieShotLimits.CAPTION_URL_MIN,
-                          max_length=MovieShotLimits.CAPTION_URL_MAX)] = None
+        str, Field(min_length=MovieShotLimits.CAPTION_URL_MIN, max_length=MovieShotLimits.CAPTION_URL_MAX)]
+    movie_id: int
+
+
+class MovieShotUpdateDB(BaseModel):
+    image_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
+    caption: Annotated[str | None, Field(min_length=MovieShotLimits.CAPTION_URL_MIN,
+                                         max_length=MovieShotLimits.CAPTION_URL_MAX)] = None
+
+
+class MovieShotUpdateReq(BaseModel):
+    caption: Annotated[str | None, Field(min_length=MovieShotLimits.CAPTION_URL_MIN,
+                                         max_length=MovieShotLimits.CAPTION_URL_MAX)] = None
 
 
 class MovieShotRead(MovieShotBase):
