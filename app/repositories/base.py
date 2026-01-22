@@ -1,11 +1,12 @@
-from typing import Generic, Type, Sequence
+from typing import Generic, Type, Sequence, Any
 
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import BinaryExpression
 
 from app_types.models import ModelType
-from app_types.schemas import CreateSchemaType, UpdateSchemaType
+from app_types.schemas import CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType
 
 
 class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -91,5 +92,55 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         pass
 
+
+class M2MRepositoryBase(
+    RepositoryBase[ModelType, CreateSchemaType, UpdateSchemaType],
+    Generic[ModelType, CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType]
+):
+    def __init__(self, model: Type[ModelType], session: AsyncSession):
+        super().__init__(model, session)
+
+    def _get_composite_id_conditions(self, obj_id: CompositeIdSchemaType) -> list[BinaryExpression[Any]]:
+        pk_data = obj_id.model_dump()
+
+        return [
+            getattr(self._model, key) == value
+            for key, value in pk_data.items()
+        ]
+
+    async def get_by_id(self, obj_id: CompositeIdSchemaType) -> ModelType | None:
+        stmt = select(self._model).where(*self._get_composite_id_conditions(obj_id))
+
         result = await self._session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def update(self, obj_id: CompositeIdSchemaType, data: UpdateSchemaType) -> ModelType | None:
+        update_data = data.model_dump(exclude_unset=True)
+        if not update_data:
+            return await self.get_by_id(obj_id)
+
+        stmt = (
+            update(self._model)
+            .where(*self._get_composite_id_conditions(obj_id))
+            .values(**update_data)
+            .returning(self._model)
+        )
+
+        try:
+            result = await self._session.execute(stmt)
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
+        return result.scalar_one_or_none()
+
+    async def delete(self, obj_id: CompositeIdSchemaType) -> bool:
+        stmt = delete(self._model).where(*self._get_composite_id_conditions(obj_id))
+
+        try:
+            result = await self._session.execute(stmt)
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
         return result.rowcount > 0  # type: ignore
