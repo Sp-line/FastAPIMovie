@@ -1,3 +1,5 @@
+from types import TracebackType
+
 from fastapi import UploadFile
 
 from services.s3 import S3Service
@@ -17,6 +19,11 @@ class FileTransaction:
         self._uploaded_url = await self._service.upload_file(self._file, self._path)
         return self._uploaded_url
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None: #todo types
+    async def __aexit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_val: BaseException | None,
+            exc_tb: TracebackType | None
+    ) -> None:
         if exc_type and self._uploaded_url:
-            await self._service.delete_file(self._uploaded_url) # todo send delete_file task
+            await self._service.delete_file(self._uploaded_url)
