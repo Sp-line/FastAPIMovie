@@ -1,4 +1,3 @@
-from asyncpg import exceptions as pg_exc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,18 +12,19 @@ class CountryRepository(RepositoryBase[Country, CountryCreateDB, CountryUpdateDB
         super().__init__(Country, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        orig = exc.orig
+        err_data = self._get_integrity_error_data(exc)
 
-        if isinstance(orig, pg_exc.UniqueViolationError):
-            match getattr(exc.orig, "constraint_name", None):
-                case "uq_countries_name":
-                    raise UniqueFieldException(field_name="name", table_name="countries")
-                case "uq_countries_slug":
-                    raise UniqueFieldException(field_name="slug", table_name="countries")
-        elif isinstance(orig, pg_exc.ForeignKeyViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "fk_movie_country_associations_country_id_countries":
-                    raise DeleteConstraintException(
-                        table_name="countries",
-                        referencing_table="movies"
-                    )
+        match err_data.sqlstate:
+            case "23505":
+                match err_data.constraint_name:
+                    case "uq_countries_name":
+                        raise UniqueFieldException(field_name="name", table_name=err_data.table_name)
+                    case "uq_countries_slug":
+                        raise UniqueFieldException(field_name="slug", table_name=err_data.table_name)
+            case "23001":
+                match err_data.constraint_name:
+                    case "fk_movie_country_associations_country_id_countries":
+                        raise DeleteConstraintException(
+                            table_name=err_data.table_name,
+                            referencing_table="movies"
+                        )
