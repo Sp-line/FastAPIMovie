@@ -7,6 +7,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 
 from app_types.models import ModelType
 from app_types.schemas import CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType
+from schemas.db import IntegrityErrorData
 
 
 class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -91,6 +92,14 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         pass
+
+    @staticmethod
+    def _get_integrity_error_data(exc: IntegrityError) -> IntegrityErrorData:
+        return IntegrityErrorData(
+            sqlstate=getattr(exc.orig, "sqlstate", None),
+            constraint_name = getattr(exc.orig.__cause__, "constraint_name", None),
+            table_name = getattr(exc.orig.__cause__, "table_name", None),
+        )
 
 
 class M2MRepositoryBase(
