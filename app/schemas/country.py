@@ -14,8 +14,8 @@ class CountryCreateDB(CountryBase):
     pass
 
 
-class CountryCreateReq(CountryBase):
-    pass
+class CountryCreateReq(BaseModel):
+    name: Annotated[str, Field(min_length=CountryLimits.NAME_MIN, max_length=CountryLimits.NAME_MAX)]
 
 
 class CountryRead(CountryBase):
