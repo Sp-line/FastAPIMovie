@@ -9,7 +9,6 @@ from core.models import Movie, MoviePersonAssociation
 from exceptions.db import UniqueFieldException
 from repositories.base import RepositoryBase
 from schemas.movie import MovieCreateDB, MovieUpdateDB
-from asyncpg import exceptions as pg_exc
 
 
 class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
@@ -56,9 +55,10 @@ class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
         return result.scalar_one_or_none()
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        orig = exc.orig
+        err_data = self._get_integrity_error_data(exc)
 
-        if isinstance(orig, pg_exc.UniqueViolationError):
-            match getattr(exc.orig, "constraint_name", None):
-                case "uq_movies_slug":
-                    raise UniqueFieldException(field_name="slug", table_name="movies")
+        match err_data.sqlstate:
+            case "23505":
+                match err_data.constraint_name:
+                    case "uq_movies_slug":
+                        raise UniqueFieldException(field_name="slug", table_name=err_data.table_name)
