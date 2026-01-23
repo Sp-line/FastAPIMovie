@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, HttpUrl
 from pydantic import PostgresDsn
 from pydantic_settings import (
@@ -9,6 +11,17 @@ from pydantic_settings import (
 class RunConfig(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8000
+
+
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical"
+    ] = "info"
+    log_format: str = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 
 class ApiV1Prefix(BaseModel):
@@ -53,6 +66,7 @@ class Settings(BaseSettings):
         extra="ignore"
     )
     run: RunConfig = RunConfig()
+    logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     s3: S3Config
