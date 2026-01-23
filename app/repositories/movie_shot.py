@@ -15,7 +15,7 @@ class MovieShotRepository(RepositoryBase[MovieShot, MovieShotCreateDB, MovieShot
         err_data = self._get_integrity_error_data(exc)
 
         match err_data.sqlstate:
-            case "23505":
+            case "23503":
                 match err_data.constraint_name:
                     case "fk_movie_shots_movie_id_movies":
-                        raise RelatedObjectNotFoundException(field_name="movie_id", table_name=err_data.table_name)
+                        raise RelatedObjectNotFoundException(field_name="movie_id", table_name="movies")
