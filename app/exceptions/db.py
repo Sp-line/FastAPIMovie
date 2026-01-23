@@ -22,6 +22,8 @@ class ObjectNotFoundException(ObjectException):
         else:
             id_repr = str(obj_id)
 
+        self.id_repr = id_repr
+
         super().__init__(f"Object with id {id_repr} not found in table '{table_name}'")
 
 
@@ -30,7 +32,7 @@ class UniqueFieldException(DBException):
         self.field_name = field_name
         self.table_name = table_name
 
-        super().__init__(f"This '{field_name}' already exists in table '{table_name}'")
+        super().__init__(f"Obj with this '{field_name}' already exists in table '{table_name}'")
 
 
 class UniqueException(DBException):
