@@ -23,7 +23,7 @@ class MovieShot(IntIdPkMixin, Base):
         ),
     )
 
-    image_url: Mapped[str] = mapped_column(String(ImageUrlLimits.MAX))
+    image_url: Mapped[str | None] = mapped_column(String(ImageUrlLimits.MAX))
     caption: Mapped[str] = mapped_column(String(MovieShotLimits.CAPTION_URL_MAX))
 
     movie_id: Mapped[int] = mapped_column(ForeignKey("movies.id", ondelete="CASCADE"))
