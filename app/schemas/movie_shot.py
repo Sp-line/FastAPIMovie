@@ -6,7 +6,7 @@ from constants import ImageUrlLimits, MovieShotLimits
 
 
 class MovieShotBase(BaseModel):
-    image_url: Annotated[str, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)]
+    image_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
     caption: Annotated[
         str, Field(min_length=MovieShotLimits.CAPTION_URL_MIN, max_length=MovieShotLimits.CAPTION_URL_MAX)]
 
