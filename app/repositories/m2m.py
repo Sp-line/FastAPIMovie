@@ -1,4 +1,3 @@
-from asyncpg import exceptions as pg_exc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,24 +22,25 @@ class MovieCountryRepository(
         super().__init__(MovieCountryAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        orig = exc.orig
+        err_data = self._get_integrity_error_data(exc)
 
-        if isinstance(orig, pg_exc.UniqueViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "uq_country_movie":
-                    raise UniqueException("movie_country_associations", "country_id", "movie_id")
-        elif isinstance(orig, pg_exc.ForeignKeyViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "fk_movie_country_associations_country_id_countries":
-                    raise RelatedObjectNotFoundException(
-                        field_name="country_id",
-                        table_name="countries",
-                    )
-                case "fk_movie_country_associations_movie_id_movies":
-                    raise RelatedObjectNotFoundException(
-                        field_name="movie_id",
-                        table_name="movies"
-                    )
+        match err_data.sqlstate:
+            case "23505":
+                match err_data.constraint_name:
+                    case "uq_country_movie":
+                        raise UniqueException(err_data.table_name, "country_id", "movie_id")
+            case "23503":
+                match err_data.constraint_name:
+                    case "fk_movie_country_associations_country_id_countries":
+                        raise RelatedObjectNotFoundException(
+                            field_name="country_id",
+                            table_name="countries",
+                        )
+                    case "fk_movie_country_associations_movie_id_movies":
+                        raise RelatedObjectNotFoundException(
+                            field_name="movie_id",
+                            table_name="movies"
+                        )
 
 
 class MovieGenreRepository(
@@ -56,24 +56,25 @@ class MovieGenreRepository(
         super().__init__(MovieGenreAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        orig = exc.orig
+        err_data = self._get_integrity_error_data(exc)
 
-        if isinstance(orig, pg_exc.UniqueViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "uq_movie_genre":
-                    raise UniqueException("movie_genre_associations", "genre_id", "movie_id")
-        elif isinstance(orig, pg_exc.ForeignKeyViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "fk_movie_genre_associations_genre_id_genres":
-                    raise RelatedObjectNotFoundException(
-                        field_name="genre_id",
-                        table_name="genres",
-                    )
-                case "fk_movie_genre_associations_movie_id_movies":
-                    raise RelatedObjectNotFoundException(
-                        field_name="movie_id",
-                        table_name="movies"
-                    )
+        match err_data.sqlstate:
+            case "23505":
+                match err_data.constraint_name:
+                    case "uq_movie_genre":
+                        raise UniqueException(err_data.table_name, "genre_id", "movie_id")
+            case "23503":
+                match err_data.constraint_name:
+                    case "fk_movie_genre_associations_genre_id_genres":
+                        raise RelatedObjectNotFoundException(
+                            field_name="genre_id",
+                            table_name="genres",
+                        )
+                    case "fk_movie_genre_associations_movie_id_movies":
+                        raise RelatedObjectNotFoundException(
+                            field_name="movie_id",
+                            table_name="movies"
+                        )
 
 
 class MoviePersonRepository(
@@ -89,21 +90,22 @@ class MoviePersonRepository(
         super().__init__(MoviePersonAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        orig = exc.orig
+        err_data = self._get_integrity_error_data(exc)
 
-        if isinstance(orig, pg_exc.UniqueViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "uq_movie_person_role":
-                    raise UniqueException("movie_person_associations", "person_id", "movie_id", "role")
-        elif isinstance(orig, pg_exc.ForeignKeyViolationError):
-            match getattr(orig, "constraint_name", None):
-                case "fk_movie_person_associations_person_id_persons":
-                    raise RelatedObjectNotFoundException(
-                        field_name="person_id",
-                        table_name="persons",
-                    )
-                case "fk_movie_person_associations_movie_id_movies":
-                    raise RelatedObjectNotFoundException(
-                        field_name="movie_id",
-                        table_name="movies"
-                    )
+        match err_data.sqlstate:
+            case "23505":
+                match err_data.constraint_name:
+                    case "uq_movie_person_role":
+                        raise UniqueException(err_data.table_name, "person_id", "movie_id", "role")
+            case "23503":
+                match err_data.constraint_name:
+                    case "fk_movie_person_associations_person_id_persons":
+                        raise RelatedObjectNotFoundException(
+                            field_name="person_id",
+                            table_name="persons",
+                        )
+                    case "fk_movie_person_associations_movie_id_movies":
+                        raise RelatedObjectNotFoundException(
+                            field_name="movie_id",
+                            table_name="movies"
+                        )
