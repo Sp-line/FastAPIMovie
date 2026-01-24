@@ -5,7 +5,7 @@ from gunicorn.app.base import BaseApplication
 
 
 class Application(BaseApplication):
-    def __init__(self, app: FastAPI, options: dict):
+    def __init__(self, app: FastAPI, options: dict) -> None:
         self.options = options
         self.app = app
         super().__init__()
