@@ -1,20 +1,22 @@
-from typing import Generic, Type
-
 from pydantic import BaseModel
 
-from app_types.repositories import RepositoryBaseType, M2MRepositoryBaseType
-from app_types.schemas import ReadSchemaType, CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType
 from exceptions.db import ObjectNotFoundException
+from repositories.base import RepositoryBase, M2MRepositoryBase
 from repositories.unit_of_work import UnitOfWork
 
 
-class ServiceBase(Generic[RepositoryBaseType, ReadSchemaType, CreateSchemaType, UpdateSchemaType]):
+class ServiceBase[
+    RepositoryBaseType: RepositoryBase,
+    ReadSchemaType: BaseModel,
+    CreateSchemaType: BaseModel,
+    UpdateSchemaType: BaseModel,
+]:
     def __init__(
             self,
             repository: RepositoryBaseType,
             unit_of_work: UnitOfWork,
             table_name: str,
-            read_schema_type: Type[BaseModel],
+            read_schema_type: type[BaseModel],
     ) -> None:
         self._repository = repository
         self._uof = unit_of_work
@@ -59,16 +61,21 @@ class ServiceBase(Generic[RepositoryBaseType, ReadSchemaType, CreateSchemaType, 
         return data
 
 
-class M2MServiceBase(
+class M2MServiceBase[
+    M2MRepositoryBaseType: M2MRepositoryBase,
+    ReadSchemaType: BaseModel,
+    CreateSchemaType: BaseModel,
+    UpdateSchemaType: BaseModel,
+    CompositeIdSchemaType: BaseModel
+](
     ServiceBase[M2MRepositoryBaseType, ReadSchemaType, CreateSchemaType, UpdateSchemaType],
-    Generic[M2MRepositoryBaseType, ReadSchemaType, CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType],
 ):
     def __init__(
             self,
-            repository: RepositoryBaseType,
+            repository: M2MRepositoryBaseType,
             unit_of_work: UnitOfWork,
             table_name: str,
-            read_schema_type: Type[BaseModel],
+            read_schema_type: type[BaseModel],
     ) -> None:
         super().__init__(
             repository,
