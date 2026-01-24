@@ -1,10 +1,9 @@
-from typing import Generic, Type
+from typing import Type
 
 from fastapi import UploadFile
 from pydantic import BaseModel
 from slugify import slugify
 
-from app_types.schemas import ReadSchemaType
 from core.config import settings
 from exceptions.db import ObjectNotFoundException
 from repositories.base import RepositoryBase
@@ -13,7 +12,7 @@ from services.s3 import S3Service
 from utils.file_transaction import FileTransaction
 
 
-class FileService(Generic[ReadSchemaType]):
+class FileService[ReadSchemaType]:
     def __init__(
             self,
             file_service: S3Service,
