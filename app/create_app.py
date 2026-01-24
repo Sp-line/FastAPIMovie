@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from core.models import db_helper
+from exceptions.register import register_exception_handlers
 from storage.s3 import s3_helper
 
 
@@ -24,4 +25,5 @@ def create() -> FastAPI:
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )
+    register_exception_handlers(app)
     return app
