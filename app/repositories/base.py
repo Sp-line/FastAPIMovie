@@ -1,17 +1,21 @@
-from typing import Generic, Type, Sequence, Any
+from typing import Sequence, Any
 
+from pydantic import BaseModel
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BinaryExpression
 
-from app_types.models import ModelType
-from app_types.schemas import CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType
+from core.models.mixins.int_id_pk import IntIdPkMixin
 from schemas.db import IntegrityErrorData
 
 
-class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], session: AsyncSession) -> None:
+class RepositoryBase[
+    ModelType: IntIdPkMixin,
+    CreateSchemaType: BaseModel,
+    UpdateSchemaType: BaseModel,
+]:
+    def __init__(self, model: type[ModelType], session: AsyncSession) -> None:
         self._model = model
         self._session = session
 
@@ -97,16 +101,20 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def _get_integrity_error_data(exc: IntegrityError) -> IntegrityErrorData:
         return IntegrityErrorData(
             sqlstate=getattr(exc.orig, "sqlstate", None),
-            constraint_name = getattr(exc.orig.__cause__, "constraint_name", None),
-            table_name = getattr(exc.orig.__cause__, "table_name", None),
+            constraint_name=getattr(exc.orig.__cause__, "constraint_name", None),
+            table_name=getattr(exc.orig.__cause__, "table_name", None),
         )
 
 
-class M2MRepositoryBase(
+class M2MRepositoryBase[
+    ModelType: IntIdPkMixin,
+    CreateSchemaType: BaseModel,
+    UpdateSchemaType: BaseModel,
+    CompositeIdSchemaType: BaseModel,
+](
     RepositoryBase[ModelType, CreateSchemaType, UpdateSchemaType],
-    Generic[ModelType, CreateSchemaType, UpdateSchemaType, CompositeIdSchemaType]
 ):
-    def __init__(self, model: Type[ModelType], session: AsyncSession):
+    def __init__(self, model: type[ModelType], session: AsyncSession):
         super().__init__(model, session)
 
     def _get_composite_id_conditions(self, obj_id: CompositeIdSchemaType) -> list[BinaryExpression[Any]]:
