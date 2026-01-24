@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Request, status, FastAPI
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.exc import IntegrityError
@@ -8,7 +10,7 @@ from exceptions.db import ObjectNotFoundException, UniqueFieldException, UniqueE
 
 def register_db_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ObjectNotFoundException)
-    async def object_not_found_handler(request: Request, exc: ObjectNotFoundException) -> ORJSONResponse:
+    async def object_not_found_handler(request: Request, exc: ObjectNotFoundException[Any]) -> ORJSONResponse:
         return ORJSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={

@@ -26,7 +26,7 @@ class ServiceBase(Generic[RepositoryBaseType, ReadSchemaType, CreateSchemaType, 
 
     async def get_by_id(self, obj_id: int) -> ReadSchemaType:
         if not (obj := await self._repository.get_by_id(obj_id)):
-            raise ObjectNotFoundException(obj_id, self._table_name)
+            raise ObjectNotFoundException[int](obj_id, self._table_name)
         return self._read_schema_type.model_validate(obj)
 
     async def bulk_create(self, data: list[CreateSchemaType]) -> list[ReadSchemaType]:
@@ -44,13 +44,13 @@ class ServiceBase(Generic[RepositoryBaseType, ReadSchemaType, CreateSchemaType, 
         async with self._uof:
             new_obj = await self._repository.update(obj_id, prepared_data)
             if not new_obj:
-                raise ObjectNotFoundException(obj_id, self._table_name)
+                raise ObjectNotFoundException[int](obj_id, self._table_name)
             return self._read_schema_type.model_validate(new_obj)
 
     async def delete(self, obj_id: int) -> None:
         async with self._uof:
             if not await self._repository.delete(obj_id):
-                raise ObjectNotFoundException(obj_id, self._table_name)
+                raise ObjectNotFoundException[int](obj_id, self._table_name)
 
     def _prepare_create_data(self, data: CreateSchemaType) -> CreateSchemaType | BaseModel:
         return data
@@ -79,7 +79,7 @@ class M2MServiceBase(
 
     async def get_by_id(self, obj_id: CompositeIdSchemaType) -> ReadSchemaType:
         if not (obj := await self._repository.get_by_id(obj_id)):
-            raise ObjectNotFoundException(obj_id, self._table_name)
+            raise ObjectNotFoundException[CompositeIdSchemaType](obj_id, self._table_name)
         return self._read_schema_type.model_validate(obj)
 
     async def update(self, obj_id: CompositeIdSchemaType, data: UpdateSchemaType) -> ReadSchemaType:
@@ -87,10 +87,10 @@ class M2MServiceBase(
         async with self._uof:
             new_obj = await self._repository.update(obj_id, prepared_data)
             if not new_obj:
-                raise ObjectNotFoundException(obj_id, self._table_name)
+                raise ObjectNotFoundException[CompositeIdSchemaType](obj_id, self._table_name)
             return self._read_schema_type.model_validate(new_obj)
 
     async def delete(self, obj_id: CompositeIdSchemaType) -> None:
         async with self._uof:
             if not await self._repository.delete(obj_id):
-                raise ObjectNotFoundException(obj_id, self._table_name)
+                raise ObjectNotFoundException[CompositeIdSchemaType](obj_id, self._table_name)

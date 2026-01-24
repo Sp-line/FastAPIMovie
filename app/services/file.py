@@ -39,7 +39,7 @@ class FileService(Generic[ReadSchemaType]):
     async def update_file(self, obj_id: int, file: UploadFile) -> ReadSchemaType:
         obj = await self._repository.get_by_id(obj_id)
         if not obj:
-            raise ObjectNotFoundException(obj_id, self._table_name)
+            raise ObjectNotFoundException[int](obj_id, self._table_name)
 
         old_url: str | None = getattr(obj, self._url_field, None)
         s3_path = f"{self._folder}/{slugify(str(getattr(obj, self._filename_field)))}"

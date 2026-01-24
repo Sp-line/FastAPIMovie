@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel
 
 
@@ -11,8 +9,8 @@ class ObjectException(DBException):
     pass
 
 
-class ObjectNotFoundException(ObjectException):
-    def __init__(self, obj_id: Any, table_name: str) -> None:
+class ObjectNotFoundException[T](ObjectException):
+    def __init__(self, obj_id: T, table_name: str) -> None:
         self.table_name = table_name
         self.obj_id = obj_id
 
