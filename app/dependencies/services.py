@@ -1,119 +1,112 @@
-from typing import Annotated
+from typing import Annotated, TypeAlias
 
 from fastapi import Depends
 
-from dependencies.db import get_uow
-from dependencies.repositories import get_movie_repository, get_person_repository, get_movie_shot_repository, \
-    get_country_repository, get_genre_repository, get_movie_country_repository, get_movie_genre_repository, \
-    get_movie_person_repository
-from dependencies.s3 import get_s3_service
-from repositories.country import CountryRepository
-from repositories.genre import GenreRepository
-from repositories.m2m import MovieCountryRepository, MovieGenreRepository, MoviePersonRepository
-from repositories.movie import MovieRepository
-from repositories.movie_shot import MovieShotRepository
-from repositories.person import PersonRepository
-from repositories.unit_of_work import UnitOfWork
+from dependencies.db import UnitOfWorkDep
+from dependencies.repositories import MovieRepositoryDep, \
+    MovieCountryRepositoryDep, \
+    MovieGenreRepositoryDep, \
+    MoviePersonRepositoryDep, PersonRepositoryDep, MovieShotRepositoryDep, CountryRepositoryDep, GenreRepositoryDep
+from dependencies.s3 import S3ServiceDep
 from services.country import CountryService
 from services.genre import GenreService
 from services.m2m import MovieCountryService, MovieGenreService, MoviePersonService
 from services.movie import MovieService, MovieFileService
 from services.movie_shot import MovieShotService, MovieShotFileService
 from services.person import PersonService, PersonFileService
-from services.s3 import S3Service
 
 
 def get_movie_service(
-        repository: Annotated[MovieRepository, Depends(get_movie_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: MovieRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> MovieService:
     return MovieService(repository, uow)
 
 
 def get_movie_country_service(
-        repository: Annotated[MovieCountryRepository, Depends(get_movie_country_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: MovieCountryRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> MovieCountryService:
     return MovieCountryService(repository, uow)
 
 
 def get_movie_genre_service(
-        repository: Annotated[MovieGenreRepository, Depends(get_movie_genre_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: MovieGenreRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> MovieGenreService:
     return MovieGenreService(repository, uow)
 
 
 def get_movie_person_service(
-        repository: Annotated[MoviePersonRepository, Depends(get_movie_person_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: MoviePersonRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> MoviePersonService:
     return MoviePersonService(repository, uow)
 
 
 def get_movie_file_service(
-        repository: Annotated[MovieRepository, Depends(get_movie_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
-        s3: Annotated[S3Service, Depends(get_s3_service)],
+        repository: MovieRepositoryDep,
+        uow: UnitOfWorkDep,
+        s3: S3ServiceDep,
 ) -> MovieFileService:
     return MovieFileService(s3, repository, uow)
 
 
 def get_person_service(
-        repository: Annotated[PersonRepository, Depends(get_person_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: PersonRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> PersonService:
     return PersonService(repository, uow)
 
 
 def get_person_file_service(
-        repository: Annotated[PersonRepository, Depends(get_person_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
-        s3: Annotated[S3Service, Depends(get_s3_service)],
+        repository: PersonRepositoryDep,
+        uow: UnitOfWorkDep,
+        s3: S3ServiceDep,
 ) -> PersonFileService:
     return PersonFileService(s3, repository, uow)
 
 
 def get_movie_shot_service(
-        repository: Annotated[MovieShotRepository, Depends(get_movie_shot_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: MovieShotRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> MovieShotService:
     return MovieShotService(repository, uow)
 
 
 def get_movie_shot_file_service(
-        repository: Annotated[MovieShotRepository, Depends(get_movie_shot_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
-        s3: Annotated[S3Service, Depends(get_s3_service)],
+        repository: MovieShotRepositoryDep,
+        uow: UnitOfWorkDep,
+        s3: S3ServiceDep,
 ) -> MovieShotFileService:
     return MovieShotFileService(s3, repository, uow)
 
 
 def get_country_service(
-        repository: Annotated[CountryRepository, Depends(get_country_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: CountryRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> CountryService:
     return CountryService(repository, uow)
 
 
 def get_genre_service(
-        repository: Annotated[GenreRepository, Depends(get_genre_repository)],
-        uow: Annotated[UnitOfWork, Depends(get_uow)],
+        repository: GenreRepositoryDep,
+        uow: UnitOfWorkDep,
 ) -> GenreService:
     return GenreService(repository, uow)
 
 
-MovieServiceDep = Annotated[MovieService, Depends(get_movie_service)]
-MovieFileServiceDep = Annotated[MovieFileService, Depends(get_movie_file_service)]
+MovieServiceDep: TypeAlias = Annotated[MovieService, Depends(get_movie_service)]
+MovieFileServiceDep: TypeAlias = Annotated[MovieFileService, Depends(get_movie_file_service)]
 
-MovieShotServiceDep = Annotated[MovieShotService, Depends(get_movie_shot_service)]
-MovieShotFileServiceDep = Annotated[MovieShotFileService, Depends(get_movie_shot_file_service)]
+MovieShotServiceDep: TypeAlias = Annotated[MovieShotService, Depends(get_movie_shot_service)]
+MovieShotFileServiceDep: TypeAlias = Annotated[MovieShotFileService, Depends(get_movie_shot_file_service)]
 
-MovieCountryServiceDep = Annotated[MovieCountryService, Depends(get_movie_country_service)]
-MovieGenreServiceDep = Annotated[MovieGenreService, Depends(get_movie_genre_service)]
-MoviePersonServiceDep = Annotated[MoviePersonService, Depends(get_movie_person_service)]
+MovieCountryServiceDep: TypeAlias = Annotated[MovieCountryService, Depends(get_movie_country_service)]
+MovieGenreServiceDep: TypeAlias = Annotated[MovieGenreService, Depends(get_movie_genre_service)]
+MoviePersonServiceDep: TypeAlias = Annotated[MoviePersonService, Depends(get_movie_person_service)]
 
-PersonServiceDep = Annotated[PersonService, Depends(get_person_service)]
-PersonFileServiceDep = Annotated[PersonFileService, Depends(get_person_file_service)]
-CountryServiceDep = Annotated[CountryService, Depends(get_country_service)]
-GenreServiceDep = Annotated[GenreService, Depends(get_genre_service)]
+PersonServiceDep: TypeAlias = Annotated[PersonService, Depends(get_person_service)]
+PersonFileServiceDep: TypeAlias = Annotated[PersonFileService, Depends(get_person_file_service)]
+CountryServiceDep: TypeAlias = Annotated[CountryService, Depends(get_country_service)]
+GenreServiceDep: TypeAlias = Annotated[GenreService, Depends(get_genre_service)]
