@@ -5,6 +5,8 @@ from schemas.movie_shot import MovieShotRead, MovieShotCreateReq, MovieShotCreat
 from services.base import IntServiceBase
 from services.file import FileService
 from services.s3 import S3Service
+from storage.path_builder import SlugFilePathBuilder
+from storage.url_resolver import FileUrlResolver
 
 
 class MovieShotService(IntServiceBase[MovieShotRepository, MovieShotRead, MovieShotCreateReq, MovieShotUpdateReq]):
@@ -37,13 +39,13 @@ class MovieShotFileService(FileService[MovieShotRead]):
             unit_of_work: UnitOfWork
     ):
         super().__init__(
-            file_service=s3_service,
+            s3_service=s3_service,
             repository=repository,
             unit_of_work=unit_of_work,
+            table_name="movie_shots",
+            url_field="image_url",
             read_schema_type=MovieShotRead,
             update_schema_type=MovieShotUpdateDB,
-            table_name="movie_shots",
-            folder="movie_shots/images",
-            url_field="image_url",
-            filename_field="caption"
+            url_resolver=FileUrlResolver(),
+            path_builder=SlugFilePathBuilder(folder="movie_shots/images", field="slug")
         )

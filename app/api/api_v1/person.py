@@ -33,7 +33,7 @@ async def update_person(person_id: int, data: PersonUpdateReq, service: PersonSe
 
 @router.put("/{person_id}/photos")
 async def update_person_photo(person_id: int, photo: UploadFile, service: PersonFileServiceDep) -> PersonRead:
-    return await service.update_file(person_id, photo)
+    return await service.save(person_id, photo)
 
 
 @router.delete("/{person_id}")

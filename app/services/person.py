@@ -1,11 +1,14 @@
 from slugify import slugify
 
+from core.models import Person
 from repositories.person import PersonRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
 from services.base import IntServiceBase
 from services.file import FileService
 from services.s3 import S3Service
+from storage.path_builder import SlugFilePathBuilder
+from storage.url_resolver import FileUrlResolver
 
 
 class PersonService(IntServiceBase[PersonRepository, PersonRead, PersonCreateReq, PersonUpdateReq]):
@@ -41,13 +44,13 @@ class PersonFileService(FileService[PersonRead]):
             unit_of_work: UnitOfWork
     ):
         super().__init__(
-            file_service=s3_service,
+            s3_service=s3_service,
             repository=repository,
             unit_of_work=unit_of_work,
+            table_name="persons",
+            url_field="photo_url",
             read_schema_type=PersonRead,
             update_schema_type=PersonUpdateDB,
-            table_name="persons",
-            folder="persons/photos",
-            url_field="photo_url",
-            filename_field="slug"
+            url_resolver=FileUrlResolver(),
+            path_builder=SlugFilePathBuilder[Person](folder="persons/photos", field="slug"),
         )
