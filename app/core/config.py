@@ -1,11 +1,11 @@
-from typing import Literal
-
 from pydantic import BaseModel, HttpUrl
 from pydantic import PostgresDsn
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
+
+from app_types.log_level import LogLevel
 
 
 class RunConfig(BaseModel):
@@ -21,13 +21,7 @@ class GunicornConfig(BaseModel):
 
 
 class LoggingConfig(BaseModel):
-    log_level: Literal[
-        "debug",
-        "info",
-        "warning",
-        "error",
-        "critical"
-    ] = "info"
+    log_level: LogLevel = "info"
     log_format: str = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 
