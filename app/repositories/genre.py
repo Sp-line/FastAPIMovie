@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Genre
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import RepositoryBase
+from repositories.base import IntRepositoryBase
 from schemas.genre import GenreCreateDB, GenreUpdateDB
 
 
-class GenreRepository(RepositoryBase[Genre, GenreCreateDB, GenreUpdateDB]):
+class GenreRepository(IntRepositoryBase[Genre, GenreCreateDB, GenreUpdateDB]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(Genre, session)
 

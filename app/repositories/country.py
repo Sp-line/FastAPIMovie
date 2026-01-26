@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Country
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import RepositoryBase
+from repositories.base import IntRepositoryBase
 from schemas.country import CountryCreateDB, CountryUpdateDB
 
 
-class CountryRepository(RepositoryBase[Country, CountryCreateDB, CountryUpdateDB]):
+class CountryRepository(IntRepositoryBase[Country, CountryCreateDB, CountryUpdateDB]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(Country, session)
 

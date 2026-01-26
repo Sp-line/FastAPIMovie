@@ -5,12 +5,12 @@ from repositories.movie import MovieRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
     MovieDetail
-from services.base import ServiceBase
+from services.base import IntServiceBase
 from services.file import FileService
 from services.s3 import S3Service
 
 
-class MovieService(ServiceBase[MovieRepository, MovieRead, MovieCreateReq, MovieUpdateReq]):
+class MovieService(IntServiceBase[MovieRepository, MovieRead, MovieCreateReq, MovieUpdateReq]):
     def __init__(
             self,
             repository: MovieRepository,
@@ -23,10 +23,12 @@ class MovieService(ServiceBase[MovieRepository, MovieRead, MovieCreateReq, Movie
             read_schema_type=MovieRead
         )
 
-    def _prepare_update_data(self, data: MovieUpdateReq) -> MovieUpdateDB:
+    @staticmethod
+    def _prepare_update_data(data: MovieUpdateReq) -> MovieUpdateDB:
         return MovieUpdateDB(**data.model_dump(exclude_unset=True))
 
-    def _prepare_create_data(self, data: MovieCreateReq) -> MovieCreateDB:
+    @staticmethod
+    def _prepare_create_data(data: MovieCreateReq) -> MovieCreateDB:
         return MovieCreateDB(
             **data.model_dump(),
             slug=slugify(data.title)

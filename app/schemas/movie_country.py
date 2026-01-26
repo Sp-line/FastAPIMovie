@@ -1,7 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 
+from schemas.m2m import CompositeIdBase
 
-class MovieCountryCompositeId(BaseModel):
+
+class MovieCountryCompositeId(CompositeIdBase):
     country_id: int
     movie_id: int
 

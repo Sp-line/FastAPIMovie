@@ -3,10 +3,10 @@ from slugify import slugify
 from repositories.genre import GenreRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.genre import GenreRead, GenreCreateDB, GenreUpdateDB, GenreCreateReq, GenreUpdateReq
-from services.base import ServiceBase
+from services.base import IntServiceBase
 
 
-class GenreService(ServiceBase[GenreRepository, GenreRead, GenreCreateReq, GenreUpdateReq]):
+class GenreService(IntServiceBase[GenreRepository, GenreRead, GenreCreateReq, GenreUpdateReq]):
     def __init__(
             self,
             repository: GenreRepository,
@@ -19,11 +19,13 @@ class GenreService(ServiceBase[GenreRepository, GenreRead, GenreCreateReq, Genre
             read_schema_type=GenreRead,
         )
 
-    def _prepare_create_data(self, data: GenreCreateReq) -> GenreCreateDB:
+    @staticmethod
+    def _prepare_create_data(data: GenreCreateReq) -> GenreCreateDB:
         return GenreCreateDB(
             **data.model_dump(),
             slug=slugify(data.name)
         )
 
-    def _prepare_update_data(self, data: GenreUpdateReq) -> GenreUpdateDB:
+    @staticmethod
+    def _prepare_update_data(data: GenreUpdateReq) -> GenreUpdateDB:
         return GenreUpdateDB(**data.model_dump(exclude_unset=True))

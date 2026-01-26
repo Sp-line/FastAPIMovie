@@ -6,7 +6,7 @@ from slugify import slugify
 
 from core.config import settings
 from exceptions.db import ObjectNotFoundException
-from repositories.base import RepositoryBase
+from repositories.base import IntRepositoryBase
 from repositories.unit_of_work import UnitOfWork
 from services.s3 import S3Service
 from utils.file_transaction import FileTransaction
@@ -16,7 +16,7 @@ class FileService[ReadSchemaType]:
     def __init__(
             self,
             file_service: S3Service,
-            repository: RepositoryBase,
+            repository: IntRepositoryBase,
             unit_of_work: UnitOfWork,
             read_schema_type: Type[BaseModel],
             update_schema_type: Type[BaseModel],

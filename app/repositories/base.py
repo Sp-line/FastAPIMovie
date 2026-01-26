@@ -1,67 +1,24 @@
-from typing import Sequence, Any
+from typing import Any
 
 from pydantic import BaseModel
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BinaryExpression
 
 from core.models.mixins.int_id_pk import IntIdPkMixin
-from schemas.db import IntegrityErrorData
+from repositories.abc import RepositoryABC
+from schemas.m2m import CompositeIdBase
 
 
-class RepositoryBase[
+class IntRepositoryBase[
     ModelType: IntIdPkMixin,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
-]:
-    def __init__(self, model: type[ModelType], session: AsyncSession) -> None:
-        self._model = model
-        self._session = session
-
-    async def get_all(
-            self,
-            skip: int = 0,
-            limit: int = 100,
-    ) -> Sequence[ModelType]:
-        stmt = select(self._model).offset(skip).limit(limit)
-        result = await self._session.execute(stmt)
-        return result.scalars().all()
-
+](
+    RepositoryABC[int, ModelType, CreateSchemaType, UpdateSchemaType]
+):
     async def get_by_id(self, obj_id: int) -> ModelType | None:
         return await self._session.get(self._model, obj_id)
-
-    async def create(self, data: CreateSchemaType) -> ModelType:
-        obj = self._model(**data.model_dump())
-        self._session.add(obj)
-
-        try:
-            await self._session.flush()
-        except IntegrityError as e:
-            self._handle_integrity_error(e)
-            raise
-
-        await self._session.refresh(obj)
-        return obj
-
-    async def bulk_create(self, data: list[CreateSchemaType]) -> list[ModelType]:
-        if not data:
-            return []
-
-        objs = [
-            self._model(**item.model_dump())
-            for item in data
-        ]
-
-        self._session.add_all(objs)
-
-        try:
-            await self._session.flush()
-        except IntegrityError as e:
-            self._handle_integrity_error(e)
-            raise
-
-        return objs
 
     async def update(self, obj_id: int, data: UpdateSchemaType) -> ModelType | None:
         update_data = data.model_dump(exclude_unset=True)
@@ -94,29 +51,15 @@ class RepositoryBase[
 
         return result.rowcount > 0  # type: ignore
 
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        pass
-
-    @staticmethod
-    def _get_integrity_error_data(exc: IntegrityError) -> IntegrityErrorData:
-        return IntegrityErrorData(
-            sqlstate=getattr(exc.orig, "sqlstate", None),
-            constraint_name=getattr(exc.orig.__cause__, "constraint_name", None),
-            table_name=getattr(exc.orig.__cause__, "table_name", None),
-        )
-
 
 class M2MRepositoryBase[
     ModelType: IntIdPkMixin,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
-    CompositeIdSchemaType: BaseModel,
+    CompositeIdSchemaType: CompositeIdBase,
 ](
-    RepositoryBase[ModelType, CreateSchemaType, UpdateSchemaType],
+    RepositoryABC[CompositeIdSchemaType, ModelType, CreateSchemaType, UpdateSchemaType],
 ):
-    def __init__(self, model: type[ModelType], session: AsyncSession):
-        super().__init__(model, session)
-
     def _get_composite_id_conditions(self, obj_id: CompositeIdSchemaType) -> list[BinaryExpression[Any]]:
         pk_data = obj_id.model_dump()
 

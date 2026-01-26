@@ -3,10 +3,10 @@ from slugify import slugify
 from repositories.country import CountryRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq
-from services.base import ServiceBase
+from services.base import IntServiceBase
 
 
-class CountryService(ServiceBase[CountryRepository, CountryRead, CountryCreateReq, CountryUpdateReq]):
+class CountryService(IntServiceBase[CountryRepository, CountryRead, CountryCreateReq, CountryUpdateReq]):
     def __init__(
             self,
             repository: CountryRepository,
@@ -19,11 +19,13 @@ class CountryService(ServiceBase[CountryRepository, CountryRead, CountryCreateRe
             read_schema_type=CountryRead,
         )
 
-    def _prepare_create_data(self, data: CountryCreateReq) -> CountryCreateDB:
+    @staticmethod
+    def _prepare_create_data(data: CountryCreateReq) -> CountryCreateDB:
         return CountryCreateDB(
             **data.model_dump(),
             slug=slugify(data.name)
         )
 
-    def _prepare_update_data(self, data: CountryUpdateReq) -> CountryUpdateDB:
+    @staticmethod
+    def _prepare_update_data(data: CountryUpdateReq) -> CountryUpdateDB:
         return CountryUpdateDB(**data.model_dump(exclude_unset=True))

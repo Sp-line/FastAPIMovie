@@ -1,10 +1,11 @@
 from pydantic import BaseModel, ConfigDict
 
 from constants import MovieRoleType
+from schemas.m2m import CompositeIdBase
 from schemas.person import PersonRead
 
 
-class MoviePersonCompositeId(BaseModel):
+class MoviePersonCompositeId(CompositeIdBase):
     movie_id: int
     person_id: int
 
