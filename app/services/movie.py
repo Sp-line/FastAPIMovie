@@ -36,8 +36,8 @@ class MovieService(IntServiceBase[MovieRepository, MovieRead, MovieCreateReq, Mo
             slug=slugify(data.title)
         )
 
-    async def get_all(self) -> list[MovieList]:
-        items = await self._repository.get_for_list()
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[MovieList]:
+        items = await self._repository.get_for_list(skip, limit)
         return [MovieList.model_validate(movie) for movie in items]
 
     async def get_by_id(self, movie_id: int) -> MovieDetail:

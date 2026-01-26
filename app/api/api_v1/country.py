@@ -7,8 +7,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_countries(service: CountryServiceDep) -> list[CountryRead]:
-    return await service.get_all()
+async def get_countries(service: CountryServiceDep, skip: int = 0, limit: int = 100) -> list[CountryRead]:
+    return await service.get_all(skip, limit)
 
 
 @router.get("/{country_id}")

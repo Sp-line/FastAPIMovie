@@ -26,8 +26,8 @@ class ServiceABC[
         self._table_name = table_name
         self._read_schema_type = read_schema_type
 
-    async def get_all(self) -> list[ReadSchemaType]:
-        return [self._read_schema_type.model_validate(obj) for obj in await self._repository.get_all()]
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[ReadSchemaType]:
+        return [self._read_schema_type.model_validate(obj) for obj in await self._repository.get_all(skip, limit)]
 
     async def bulk_create(self, data: list[CreateSchemaType]) -> list[ReadSchemaType]:
         data = list(map(self._prepare_create_data, data))

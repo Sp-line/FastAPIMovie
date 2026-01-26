@@ -8,9 +8,11 @@ router = APIRouter()
 
 @router.get("/movie-genre-associations")
 async def get_movie_genre_associations(
-        service: MovieGenreServiceDep
+        service: MovieGenreServiceDep,
+        skip: int = 0,
+        limit: int = 100
 ) -> list[MovieGenreRead]:
-    return await service.get_all()
+    return await service.get_all(skip, limit)
 
 
 @router.get("/movies/{movie_id}/genres/{genre_id}")

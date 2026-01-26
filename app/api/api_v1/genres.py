@@ -7,8 +7,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_genres(service: GenreServiceDep) -> list[GenreRead]:
-    return await service.get_all()
+async def get_genres(service: GenreServiceDep, skip: int = 0, limit: int = 100) -> list[GenreRead]:
+    return await service.get_all(skip, limit)
 
 
 @router.get("/{genre_id}")

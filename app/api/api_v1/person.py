@@ -7,8 +7,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_persons(service: PersonServiceDep) -> list[PersonRead]:
-    return await service.get_all()
+async def get_persons(service: PersonServiceDep, skip: int = 0, limit: int = 100) -> list[PersonRead]:
+    return await service.get_all(skip, limit)
 
 
 @router.get("/{person_id}")
