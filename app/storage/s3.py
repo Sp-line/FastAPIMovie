@@ -1,3 +1,5 @@
+from typing import Any
+
 import aioboto3
 from types_aiobotocore_s3 import S3Client
 
@@ -13,14 +15,13 @@ class S3Helper:
             secret_key: str,
             region: str = "us-east-1",
     ) -> None:
-        self._config: dict[str, str] = {
+        self._config: dict[str, Any] = {
             "endpoint_url": endpoint_url,
             "aws_access_key_id": access_key,
             "aws_secret_access_key": secret_key,
             "region_name": region,
         }
         self.session: aioboto3.Session = aioboto3.Session()
-
         self._client: S3Client | None = None
 
     async def connect(self) -> None:
@@ -31,7 +32,6 @@ class S3Helper:
     async def close(self) -> None:
         if self._client is None:
             return
-
         await self._client.__aexit__(None, None, None)
         self._client = None
 
