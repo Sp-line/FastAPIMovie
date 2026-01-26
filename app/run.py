@@ -12,7 +12,7 @@ def main() -> None:
             timeout=settings.gunicorn.timeout,
             workers=settings.gunicorn.workers,
             log_level=settings.logging.log_level,
-        ),
+        ).model_dump(),
     )
     app.run()
 

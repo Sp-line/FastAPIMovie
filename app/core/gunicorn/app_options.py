@@ -1,4 +1,5 @@
-from core.gunicorn.logger import GunicornLogger
+from app_types.log_level import LogLevel
+from schemas.gunicorn_app_options import GunicornAppOptions
 
 
 def get_app_options(
@@ -6,15 +7,12 @@ def get_app_options(
         port: int,
         timeout: int,
         workers: int,
-        log_level: str,
-) -> dict:
-    return {
-        "accesslog": "-",
-        "errorlog": "-",
-        "bind": f"{host}:{port}",
-        "workers": workers,
-        "timeout": timeout,
-        "logger_class": GunicornLogger,
-        "loglevel": log_level,
-        "worker_class": "uvicorn.workers.UvicornWorker",
-    }
+        log_level: LogLevel,
+) -> GunicornAppOptions:
+    return GunicornAppOptions(
+        host=host,
+        port=port,
+        timeout=timeout,
+        workers=workers,
+        loglevel=log_level,
+    )
