@@ -31,7 +31,7 @@ async def update_movie_shot(movie_shot_id: int, data: MovieShotUpdateReq, servic
     return await service.update(movie_shot_id, data)
 
 
-@router.put("/{movie_shot_id}/photos")
+@router.put("/{movie_shot_id}/images")
 async def update_movie_shot_image(movie_shot_id: int, image: UploadFile, service: MovieShotFileServiceDep) -> MovieShotRead:
     return await service.update_file(movie_shot_id, image)
 
