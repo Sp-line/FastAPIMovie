@@ -27,13 +27,20 @@ async def bulk_create_movie_shots(data: list[MovieShotCreateReq], service: Movie
 
 
 @router.patch("/{movie_shot_id}")
-async def update_movie_shot(movie_shot_id: int, data: MovieShotUpdateReq, service: MovieShotServiceDep) -> MovieShotRead:
+async def update_movie_shot(movie_shot_id: int, data: MovieShotUpdateReq,
+                            service: MovieShotServiceDep) -> MovieShotRead:
     return await service.update(movie_shot_id, data)
 
 
 @router.put("/{movie_shot_id}/images")
-async def update_movie_shot_image(movie_shot_id: int, image: UploadFile, service: MovieShotFileServiceDep) -> MovieShotRead:
+async def update_movie_shot_image(movie_shot_id: int, image: UploadFile,
+                                  service: MovieShotFileServiceDep) -> MovieShotRead:
     return await service.save(movie_shot_id, image)
+
+
+@router.delete("/{movie_shot_id}/images")
+async def delete_movie_shot_image(movie_shot_id: int, service: MovieShotFileServiceDep) -> MovieShotRead:
+    return await service.delete(movie_shot_id)
 
 
 @router.delete("/{movie_shot_id}")
