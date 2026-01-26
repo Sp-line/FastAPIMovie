@@ -36,6 +36,11 @@ async def update_movie_poster(movie_id: int, poster: UploadFile, service: MovieF
     return await service.save(movie_id, poster)
 
 
+@router.delete("/{movie_id}/posters")
+async def delete_movie_poster(movie_id: int, service: MovieFileServiceDep) -> MovieRead:
+    return await service.delete(movie_id)
+
+
 @router.delete("/{movie_id}")
 async def delete_movie(movie_id: int, service: MovieServiceDep) -> None:
     return await service.delete(movie_id)
