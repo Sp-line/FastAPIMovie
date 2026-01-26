@@ -1,7 +1,8 @@
 from fastapi import Request, status, FastAPI
 from fastapi.responses import ORJSONResponse
 
-from exceptions.s3 import S3ClientNotInitializedException, S3UploadException, S3DeleteException
+from exceptions.s3 import S3ClientNotInitializedException, S3UploadException, S3DeleteException, \
+    FilePathBuilderNoneValueException
 
 
 def register_s3_exception_handlers(app: FastAPI) -> None:
@@ -28,6 +29,16 @@ def register_s3_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "object_name": exc.obj_name,
+                "detail": str(exc)
+            },
+        )
+
+    @app.exception_handler(FilePathBuilderNoneValueException)
+    async def file_path_builder_none_value(request: Request, exc: FilePathBuilderNoneValueException):
+        return ORJSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "field_name": exc.field_name,
                 "detail": str(exc)
             },
         )

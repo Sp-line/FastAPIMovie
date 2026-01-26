@@ -21,3 +21,9 @@ class S3DeleteException(S3Exception):
     def __init__(self, obj_name: str) -> None:
         self.obj_name = obj_name
         super().__init__(f"Failed to delete file {obj_name}.")
+
+
+class FilePathBuilderNoneValueException(S3Exception):
+    def __init__(self, field_name: str) -> None:
+        self.field_name = field_name
+        super().__init__(f"Field {field_name} cannot be None.")
