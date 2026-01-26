@@ -34,6 +34,7 @@ async def update_movie(movie_id: int, data: MovieUpdateReq, service: MovieServic
 @router.put("/{movie_id}/posters")
 async def update_movie_photo(movie_id: int, poster: UploadFile, service: MovieFileServiceDep) -> MovieRead:
     return await service.update_file(movie_id, poster)
+async def update_movie_poster(movie_id: int, poster: UploadFile, service: MovieFileServiceDep) -> MovieRead:
 
 
 @router.delete("/{movie_id}")
