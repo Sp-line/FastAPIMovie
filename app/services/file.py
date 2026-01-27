@@ -7,6 +7,7 @@ from repositories.unit_of_work import UnitOfWork
 from services.s3 import S3Service
 from storage.abc import FilePathBuilderABC, FileUrlResolverABC, FileServiceABC
 from storage.transaction import FileTransaction
+from tasks.s3 import delete_s3_file
 
 
 class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
@@ -49,7 +50,7 @@ class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
                 new_obj = self._read_schema_type.model_validate(await self._repository.update(obj_id, update_data))
 
         if old_url:
-            await self._s3.delete_file(self._url_resolver.from_url(old_url))
+            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))
 
         return new_obj
 
@@ -62,6 +63,6 @@ class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
             updated_obj = await self._repository.update(obj_id, update_data)
 
         if old_url:
-            await self._s3.delete_file(self._url_resolver.from_url(old_url))
+            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))
 
         return self._read_schema_type.model_validate(updated_obj)
