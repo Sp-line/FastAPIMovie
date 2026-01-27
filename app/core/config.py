@@ -1,7 +1,6 @@
-from pydantic import BaseModel, HttpUrl
-from pydantic import PostgresDsn
 import logging
 
+from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -41,6 +40,11 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
+class TaskiqConfig(BaseModel):
+    url: AmqpDsn
+    log_format: str = "[%(asctime)s.%(msecs)03d][%(processName)s] %(module)16s:%(lineno)-3d %(levelname)-7s - %(message)s"
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -77,6 +81,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    taskiq: TaskiqConfig
     db: DatabaseConfig
     s3: S3Config
 
