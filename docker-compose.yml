@@ -35,3 +35,13 @@ services:
     env_file:
       - app/.env
     command: server /data --console-address ":9001"
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_queue
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - app/.env
