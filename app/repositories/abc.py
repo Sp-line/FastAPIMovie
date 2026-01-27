@@ -29,7 +29,7 @@ class RepositoryABC[
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
 ](IntegrityCheckerABC, ABC):
-    def __init__(self, model: type[ModelType], session: AsyncSession):
+    def __init__(self, model: type[ModelType], session: AsyncSession) -> None:
         self._model = model
         self._session = session
 
