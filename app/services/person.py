@@ -1,6 +1,5 @@
 from slugify import slugify
 
-from core.models import Person
 from repositories.person import PersonRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
@@ -52,5 +51,5 @@ class PersonFileService(FileService[PersonRead]):
             read_schema_type=PersonRead,
             update_schema_type=PersonUpdateDB,
             url_resolver=FileUrlResolver(),
-            path_builder=SlugFilePathBuilder[Person](folder="persons/photos", field="slug"),
+            path_builder=SlugFilePathBuilder[PersonRead](folder="persons/photos", field="slug"),
         )
