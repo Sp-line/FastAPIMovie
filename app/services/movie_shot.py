@@ -47,5 +47,5 @@ class MovieShotFileService(FileService[MovieShotRead]):
             read_schema_type=MovieShotRead,
             update_schema_type=MovieShotUpdateDB,
             url_resolver=FileUrlResolver(),
-            path_builder=SlugFilePathBuilder(folder="movie_shots/images", field="slug")
+            path_builder=SlugFilePathBuilder[MovieShotRead](folder="movie_shots/images", field="slug")
         )
