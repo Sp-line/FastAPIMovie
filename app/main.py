@@ -8,6 +8,7 @@ from create_app import create
 
 logging.basicConfig(
     format=settings.logging.log_format,
+    level=settings.logging.log_level_value,
 )
 
 main_app = create()
