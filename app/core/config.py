@@ -1,5 +1,7 @@
 from pydantic import BaseModel, HttpUrl
 from pydantic import PostgresDsn
+import logging
+
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -23,6 +25,11 @@ class GunicornConfig(BaseModel):
 class LoggingConfig(BaseModel):
     log_level: LogLevel = "info"
     log_format: str = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+    log_datefmt: str = "%Y-%m-%d %H:%M:%S"
+
+    @property
+    def log_level_value(self) -> int:
+        return logging.getLevelNamesMapping()[self.log_level.upper()]
 
 
 class ApiV1Prefix(BaseModel):
