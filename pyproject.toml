@@ -15,6 +15,9 @@ aioboto3 = "^15.5.0"
 types-aiobotocore = {extras = ["s3"], version = "^3.1.0"}
 python-slugify = "==8.0.4"
 gunicorn = "^24.0.0"
+taskiq = "^0.12.1"
+taskiq-aio-pika = "^0.5.0"
+taskiq-aio-pika = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
