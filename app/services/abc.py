@@ -19,7 +19,7 @@ class ServiceABC[
             repository: RepositoryBaseType,
             unit_of_work: UnitOfWork,
             table_name: str,
-            read_schema_type: type[BaseModel],
+            read_schema_type: type[ReadSchemaType],
     ) -> None:
         self._repository = repository
         self._uof = unit_of_work
