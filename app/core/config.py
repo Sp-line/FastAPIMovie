@@ -1,6 +1,6 @@
 import logging
 
-from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn
+from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn, NatsDsn
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -45,6 +45,10 @@ class TaskiqConfig(BaseModel):
     log_format: str = "[%(asctime)s.%(msecs)03d][%(processName)s] %(module)16s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 
+class FastStreamConfig(BaseModel):
+    nats_url: NatsDsn
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -81,6 +85,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    faststream: FastStreamConfig
     taskiq: TaskiqConfig
     db: DatabaseConfig
     s3: S3Config
