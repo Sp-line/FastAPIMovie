@@ -3,7 +3,7 @@ from types_aiobotocore_s3 import S3Client
 
 from core.config import settings
 from exceptions.s3 import S3ClientNotInitializedException
-from schemas.s3_client_config import S3ClientConfig
+from schemas.s3 import S3ClientConfig
 
 
 class S3Helper:
