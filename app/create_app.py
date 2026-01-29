@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from core import broker
+from core import broker, fs_router
 from core.models import db_helper
 from exceptions.register import register_exception_handlers
 from storage.s3 import s3_helper
@@ -30,5 +30,6 @@ def create() -> FastAPI:
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )
+    app.include_router(fs_router)
     register_exception_handlers(app)
     return app
