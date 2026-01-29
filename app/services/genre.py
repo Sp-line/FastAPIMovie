@@ -3,10 +3,19 @@ from slugify import slugify
 from repositories.genre import GenreRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.genre import GenreRead, GenreCreateDB, GenreUpdateDB, GenreCreateReq, GenreUpdateReq
-from services.base import IntServiceBase
+from services.base import IntServiceABC
 
 
-class GenreService(IntServiceBase[GenreRepository, GenreRead, GenreCreateReq, GenreUpdateReq]):
+class GenreService(
+    IntServiceABC[
+        GenreRepository,
+        GenreRead,
+        GenreCreateReq,
+        GenreUpdateReq,
+        GenreCreateDB,
+        GenreUpdateDB
+    ]
+):
     def __init__(
             self,
             repository: GenreRepository,

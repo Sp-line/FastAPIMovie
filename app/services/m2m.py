@@ -3,17 +3,19 @@ from repositories.unit_of_work import UnitOfWork
 from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate, MovieCountryCompositeId
 from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
 from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate, MoviePersonCompositeId
-from services.base import M2MServiceBase
+from services.base import M2MServiceABC
 
 
 class MovieCountryService(
-    M2MServiceBase
+    M2MServiceABC
     [
         MovieCountryRepository,
         MovieCountryRead,
         MovieCountryCreate,
         MovieCountryUpdate,
-        MovieCountryCompositeId
+        MovieCountryCompositeId,
+        MovieCountryCreate,
+        MovieCountryUpdate,
     ]
 ):
     def __init__(
@@ -28,15 +30,25 @@ class MovieCountryService(
             read_schema_type=MovieCountryRead,
         )
 
+    @staticmethod
+    def _prepare_create_data(data: MovieCountryCreate) -> MovieCountryCreate:
+        return data
+
+    @staticmethod
+    def _prepare_update_data(data: MovieCountryUpdate) -> MovieCountryUpdate:
+        return data
+
 
 class MovieGenreService(
-    M2MServiceBase
+    M2MServiceABC
     [
         MovieGenreRepository,
         MovieGenreRead,
         MovieGenreCreate,
         MovieGenreUpdate,
-        MovieGenreCompositeId
+        MovieGenreCompositeId,
+        MovieGenreCreate,
+        MovieGenreUpdate,
     ]
 ):
     def __init__(
@@ -51,15 +63,25 @@ class MovieGenreService(
             read_schema_type=MovieGenreRead,
         )
 
+    @staticmethod
+    def _prepare_create_data(data: MovieGenreCreate) -> MovieGenreCreate:
+        return data
+
+    @staticmethod
+    def _prepare_update_data(data: MovieGenreUpdate) -> MovieGenreUpdate:
+        return data
+
 
 class MoviePersonService(
-    M2MServiceBase
+    M2MServiceABC
     [
         MoviePersonRepository,
         MoviePersonRead,
         MoviePersonCreate,
         MoviePersonUpdate,
-        MoviePersonCompositeId
+        MoviePersonCompositeId,
+        MoviePersonCreate,
+        MoviePersonUpdate,
     ]
 ):
     def __init__(
@@ -73,3 +95,12 @@ class MoviePersonService(
             table_name="movie_person_associations",
             read_schema_type=MoviePersonRead,
         )
+
+    @staticmethod
+    def _prepare_create_data(data: MoviePersonCreate) -> MoviePersonCreate:
+        return data
+
+    @staticmethod
+    def _prepare_update_data(data: MoviePersonUpdate) -> MoviePersonUpdate:
+        return data
+

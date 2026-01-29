@@ -3,10 +3,19 @@ from slugify import slugify
 from repositories.country import CountryRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq
-from services.base import IntServiceBase
+from services.base import IntServiceABC
 
 
-class CountryService(IntServiceBase[CountryRepository, CountryRead, CountryCreateReq, CountryUpdateReq]):
+class CountryService(
+    IntServiceABC[
+        CountryRepository,
+        CountryRead,
+        CountryCreateReq,
+        CountryUpdateReq,
+        CountryCreateDB,
+        CountryUpdateDB,
+    ]
+):
     def __init__(
             self,
             repository: CountryRepository,

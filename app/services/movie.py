@@ -5,14 +5,23 @@ from repositories.movie import MovieRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
     MovieDetail
-from services.base import IntServiceBase
+from services.base import IntServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
 from storage.url_resolver import FileUrlResolver
 
 
-class MovieService(IntServiceBase[MovieRepository, MovieRead, MovieCreateReq, MovieUpdateReq]):
+class MovieService(
+    IntServiceABC[
+        MovieRepository,
+        MovieRead,
+        MovieCreateReq,
+        MovieUpdateReq,
+        MovieCreateDB,
+        MovieUpdateDB
+    ]
+):
     def __init__(
             self,
             repository: MovieRepository,

@@ -1,4 +1,5 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Any, cast
 
 from pydantic import BaseModel
 
@@ -13,15 +14,17 @@ class ServiceABC[
     ReadSchemaType: BaseModel,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
+    DBCreateSchemaType: BaseModel,
+    DBUpdateSchemaType: BaseModel,
 ](ABC):
     def __init__(
             self,
-            repository: RepositoryBaseType,
+            repository: RepositoryABC[IdT, Any, DBCreateSchemaType, DBUpdateSchemaType],
             unit_of_work: UnitOfWork,
             table_name: str,
             read_schema_type: type[ReadSchemaType],
     ) -> None:
-        self._repository = repository
+        self._repository = cast(RepositoryBaseType, repository)
         self._uof = unit_of_work
         self._table_name = table_name
         self._read_schema_type = read_schema_type
@@ -30,9 +33,9 @@ class ServiceABC[
         return [self._read_schema_type.model_validate(obj) for obj in await self._repository.get_all(skip, limit)]
 
     async def bulk_create(self, data: list[CreateSchemaType]) -> list[ReadSchemaType]:
-        data = list(map(self._prepare_create_data, data))
+        prepared_data = list(map(self._prepare_create_data, data))
         async with self._uof:
-            return [self._read_schema_type.model_validate(obj) for obj in await self._repository.bulk_create(data)]
+            return [self._read_schema_type.model_validate(obj) for obj in await self._repository.bulk_create(prepared_data)]
 
     async def create(self, data: CreateSchemaType) -> ReadSchemaType:
         prepared_data = self._prepare_create_data(data)
@@ -58,9 +61,11 @@ class ServiceABC[
                 raise ObjectNotFoundException[IdT](obj_id, self._table_name)
 
     @staticmethod
-    def _prepare_create_data(data: CreateSchemaType) -> CreateSchemaType | BaseModel:
-        return data
+    @abstractmethod
+    def _prepare_create_data(data: CreateSchemaType) -> DBCreateSchemaType:
+        ...
 
     @staticmethod
-    def _prepare_update_data(data: UpdateSchemaType) -> UpdateSchemaType | BaseModel:
-        return data
+    @abstractmethod
+    def _prepare_update_data(data: UpdateSchemaType) -> DBUpdateSchemaType:
+        ...
