@@ -86,4 +86,4 @@ class Settings(BaseSettings):
     s3: S3Config
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]
