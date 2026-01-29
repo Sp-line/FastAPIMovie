@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from gunicorn.glogging import Logger
-from pydantic import Field, BaseModel, computed_field
+from pydantic import Field, BaseModel, computed_field, ConfigDict
 
 from app_types.log_level import LogLevel
 from core.gunicorn.logger import GunicornLogger
@@ -17,9 +17,11 @@ class GunicornAppOptions(BaseModel):
     accesslog: str = "-"
     errorlog: str = "-"
     worker_class: str = "uvicorn.workers.UvicornWorker"
-    logger_class: Logger = GunicornLogger
+    logger_class: type[Logger] = GunicornLogger
 
-    @computed_field
     @property
+    @computed_field
     def bind(self) -> str:
         return f"{self.host}:{self.port}"
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
