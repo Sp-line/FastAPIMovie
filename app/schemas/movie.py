@@ -64,9 +64,7 @@ class MovieUpdateReq(MovieUpdateBase):
     pass
 
 
-class MovieDetail(MovieBase):
-    id: int
-
+class MovieDetail(MovieRead):
     genres: Annotated[list[GenreRead], Field(default_factory=list)]
     countries: Annotated[list[CountryRead], Field(default_factory=list)]
     shots: Annotated[list[MovieRelatedShotRead], Field(default_factory=list)]
