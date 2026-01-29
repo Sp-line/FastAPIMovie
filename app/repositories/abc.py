@@ -16,10 +16,16 @@ class IntegrityCheckerABC(ABC):
 
     @staticmethod
     def _get_integrity_error_data(exc: IntegrityError) -> IntegrityErrorData:
+        cause = getattr(exc.orig, "__cause__", None)
+
+        sqlstate = str(getattr(exc.orig, "sqlstate", ""))
+        constraint = str(getattr(cause, "constraint_name", ""))
+        table = str(getattr(cause, "table_name", ""))
+
         return IntegrityErrorData(
-            sqlstate=getattr(exc.orig, "sqlstate", None),
-            constraint_name=getattr(exc.orig.__cause__, "constraint_name", None),
-            table_name=getattr(exc.orig.__cause__, "table_name", None),
+            sqlstate=sqlstate,
+            constraint_name=constraint,
+            table_name=table,
         )
 
 
