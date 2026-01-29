@@ -50,7 +50,7 @@ class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
                 new_obj = self._read_schema_type.model_validate(await self._repository.update(obj_id, update_data))
 
         if old_url:
-            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))
+            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))  # type: ignore[call-overload]
 
         return new_obj
 
@@ -63,6 +63,6 @@ class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
             updated_obj = await self._repository.update(obj_id, update_data)
 
         if old_url:
-            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))
+            await delete_s3_file.kiq(self._url_resolver.from_url(old_url))  # type: ignore[call-overload]
 
         return self._read_schema_type.model_validate(updated_obj)
