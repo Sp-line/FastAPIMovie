@@ -3,7 +3,7 @@ from typing import Annotated
 from gunicorn.glogging import Logger
 from pydantic import Field, BaseModel, computed_field, ConfigDict
 
-from app_types.log_level import LogLevel
+from log import LogLevel
 from core.gunicorn.logger import GunicornLogger
 
 

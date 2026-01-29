@@ -6,7 +6,7 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
-from app_types.log_level import LogLevel
+from log import LogLevel
 
 
 class RunConfig(BaseModel):

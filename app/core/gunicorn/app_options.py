@@ -1,4 +1,4 @@
-from app_types.log_level import LogLevel
+from log import LogLevel
 from schemas.gunicorn import GunicornAppOptions
 
 
