@@ -55,7 +55,7 @@ class MovieService(
         return MovieDetail.model_validate(movie)
 
 
-class MovieFileService(FileService[MovieRead]):
+class MovieFileService(FileService[MovieRead, MovieUpdateDB]):
     def __init__(
             self,
             s3_service: S3Service,

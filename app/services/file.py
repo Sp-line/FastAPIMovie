@@ -10,14 +10,17 @@ from storage.transaction import FileTransaction
 from tasks.s3 import delete_s3_file
 
 
-class FileService[TReadSchema: BaseModel](FileServiceABC[TReadSchema]):
+class FileService[
+    TReadSchema: BaseModel,
+    TUpdateSchema: BaseModel
+](FileServiceABC[TReadSchema]):
     def __init__(
             self,
             s3_service: S3Service,
             repository: IntRepositoryBase,
             unit_of_work: UnitOfWork,
             read_schema_type: type[TReadSchema],
-            update_schema_type: type[BaseModel],
+            update_schema_type: type[TUpdateSchema],
             path_builder: FilePathBuilderABC[TReadSchema],
             url_resolver: FileUrlResolverABC,
             table_name: str,

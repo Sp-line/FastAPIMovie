@@ -40,7 +40,7 @@ class MovieShotService(
         return MovieShotCreateDB(**data.model_dump())
 
 
-class MovieShotFileService(FileService[MovieShotRead]):
+class MovieShotFileService(FileService[MovieShotRead, MovieShotUpdateDB]):
     def __init__(
             self,
             s3_service: S3Service,

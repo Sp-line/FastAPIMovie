@@ -44,7 +44,7 @@ class PersonService(
         )
 
 
-class PersonFileService(FileService[PersonRead]):
+class PersonFileService(FileService[PersonRead, PersonUpdateDB]):
     def __init__(
             self,
             s3_service: S3Service,
