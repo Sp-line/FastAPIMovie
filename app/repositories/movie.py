@@ -40,7 +40,7 @@ class MovieRepository(IntRepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
-    async def get_for_read(self, movie_id: int) -> Movie:
+    async def get_for_read(self, movie_id: int) -> Movie | None:
         stmt = (
             select(Movie)
             .where(Movie.id == movie_id)
