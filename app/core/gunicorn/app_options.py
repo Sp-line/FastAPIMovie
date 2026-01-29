@@ -1,5 +1,5 @@
 from app_types.log_level import LogLevel
-from schemas.gunicorn_app_options import GunicornAppOptions
+from schemas.gunicorn import GunicornAppOptions
 
 
 def get_app_options(
