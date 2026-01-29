@@ -3,7 +3,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.111.0"
+fastapi = "^0.128.0"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 pydantic = {extras = ["email"], version = "^2.7.1"}
 pydantic-settings = "^2.2.1"
@@ -21,6 +21,8 @@ taskiq-fastapi = "^0.4.0"
 mypy = "^1.19.1"
 types-gunicorn = "==24.1.0.20260127"
 types-aioboto3 = "==15.5.0"
+faststream = {extras = ["nats"], version = "^0.6.5"}
+python-multipart = "^0.0.22"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
