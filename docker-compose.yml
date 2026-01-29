@@ -45,3 +45,12 @@ services:
       - "15672:15672"
     env_file:
       - app/.env
+
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: nats_server
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-m", "8222"]
