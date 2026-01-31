@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from cache import redis_helper
 from core import broker, fs_router
 from core.models import db_helper
 from exceptions.register import register_exception_handlers
@@ -12,12 +13,13 @@ from storage.s3 import s3_helper
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await s3_helper.connect()
-
     if not broker.is_worker_process:
         await broker.startup()
+    await redis_helper.connect()
 
     yield
 
+    await redis_helper.close()
     if not broker.is_worker_process:
         await broker.shutdown()
 
