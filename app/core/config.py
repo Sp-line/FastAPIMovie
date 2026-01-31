@@ -1,6 +1,6 @@
 import logging
 
-from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn, NatsDsn
+from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn, NatsDsn, RedisDsn
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -73,6 +73,10 @@ class S3Config(BaseModel):
     region: str
 
 
+class RedisConfig(BaseModel):
+    url: RedisDsn
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -85,6 +89,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    redis: RedisConfig
     faststream: FastStreamConfig
     taskiq: TaskiqConfig
     db: DatabaseConfig
