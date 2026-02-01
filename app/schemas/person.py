@@ -3,6 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import ImageUrlLimits, PersonLimits
+from schemas.base import Id
 
 
 class PersonBase(BaseModel):
@@ -32,7 +33,5 @@ class PersonUpdateReq(PersonUpdateBase):
     pass
 
 
-class PersonRead(PersonBase):
-    id: int
-
+class PersonRead(PersonBase, Id):
     model_config = ConfigDict(from_attributes=True)

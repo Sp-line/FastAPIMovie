@@ -3,6 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field
 
 from constants import CountryLimits
+from schemas.base import Id
 
 
 class CountryBase(BaseModel):
@@ -18,9 +19,7 @@ class CountryCreateReq(BaseModel):
     name: Annotated[str, Field(min_length=CountryLimits.NAME_MIN, max_length=CountryLimits.NAME_MAX)]
 
 
-class CountryRead(CountryBase):
-    id: int
-
+class CountryRead(CountryBase, Id):
     model_config = ConfigDict(from_attributes=True)
 
 

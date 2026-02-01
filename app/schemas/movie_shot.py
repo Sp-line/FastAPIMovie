@@ -3,6 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import ImageUrlLimits, MovieShotLimits
+from schemas.base import Id
 
 
 class MovieShotBase(BaseModel):
@@ -32,8 +33,7 @@ class MovieShotUpdateReq(BaseModel):
                                          max_length=MovieShotLimits.CAPTION_URL_MAX)] = None
 
 
-class MovieShotRead(MovieShotBase):
-    id: int
+class MovieShotRead(MovieShotBase, Id):
     movie_id: int
 
     model_config = ConfigDict(from_attributes=True)

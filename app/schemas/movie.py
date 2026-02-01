@@ -4,6 +4,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import MovieLimits, ImageUrlLimits
+from schemas.base import Id
 from schemas.country import CountryRead
 from schemas.genre import GenreRead
 from schemas.movie_person import MoviePersonRelatedRead
@@ -25,9 +26,7 @@ class MovieBase(MovieSummaryBase):
     premiere_date: datetime | None = None
 
 
-class MovieRead(MovieBase):
-    id: int
-
+class MovieRead(MovieBase, Id):
     model_config = ConfigDict(from_attributes=True)
 
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+from schemas.base import Id
 from schemas.m2m import CompositeIdBase
 
 
@@ -21,8 +22,5 @@ class MovieCountryUpdate(BaseModel):
     movie_id: int | None = None
 
 
-class MovieCountryRead(MovieCountryBase):
-    id: int
-
+class MovieCountryRead(MovieCountryBase, Id):
     model_config = ConfigDict(from_attributes=True)
-

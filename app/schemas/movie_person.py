@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from constants import MovieRoleType
+from schemas.base import Id
 from schemas.m2m import CompositeIdBase
 from schemas.person import PersonRead
 
@@ -24,9 +25,7 @@ class MoviePersonUpdate(BaseModel):
     role: MovieRoleType | None = None
 
 
-class MoviePersonRead(MoviePersonBase):
-    id: int
-
+class MoviePersonRead(MoviePersonBase, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
