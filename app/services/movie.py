@@ -51,7 +51,7 @@ class MovieService(
 
     async def get_by_id(self, movie_id: int) -> MovieDetail:
         if not (movie := await self._repository.get_for_read(movie_id)):
-            raise ObjectNotFoundException[int](movie_id, self._table_name)
+            raise ObjectNotFoundException(movie_id, self._table_name)
         return MovieDetail.model_validate(movie)
 
 
