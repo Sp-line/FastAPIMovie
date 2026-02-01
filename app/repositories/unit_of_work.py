@@ -1,11 +1,11 @@
 from typing import Self
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from signals.event_session import EventSession
 
 
 class UnitOfWork:
-    def __init__(self, session: AsyncSession) -> None:
-        self.__session = session
+    def __init__(self, session: EventSession) -> None:
+        self._session = session
 
     async def __aenter__(self) -> Self:
         return self
@@ -17,6 +17,6 @@ class UnitOfWork:
             exc_tb: object | None,
     ) -> None:
         if exc_type:
-            await self.__session.rollback()
+            await self._session.rollback()
         else:
-            await self.__session.commit()
+            await self._session.commit()
