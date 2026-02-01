@@ -1,15 +1,14 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Person
 from exceptions.db import UniqueFieldException, DeleteConstraintException
 from repositories.base import RepositoryBase
 from schemas.person import PersonCreateDB, PersonUpdateDB
+from signals.event_session import EventSession
 
 
-class PersonRepository(IntRepositoryBase[Person, PersonCreateDB, PersonUpdateDB]):
-    def __init__(self, session: AsyncSession) -> None:
 class PersonRepository(RepositoryBase[Person, PersonCreateDB, PersonUpdateDB]):
+    def __init__(self, session: EventSession) -> None:
         super().__init__(Person, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:

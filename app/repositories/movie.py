@@ -2,18 +2,17 @@ from typing import Sequence
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import load_only, selectinload
 
 from core.models import Movie, MoviePersonAssociation
 from exceptions.db import UniqueFieldException
 from repositories.base import RepositoryBase
 from schemas.movie import MovieCreateDB, MovieUpdateDB
+from signals.event_session import EventSession
 
 
-class MovieRepository(IntRepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
-    def __init__(self, session: AsyncSession) -> None:
 class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
+    def __init__(self, session: EventSession) -> None:
         super().__init__(Movie, session)
 
     async def get_for_list(

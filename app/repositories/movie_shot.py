@@ -1,15 +1,14 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import MovieShot
 from exceptions.db import RelatedObjectNotFoundException
 from repositories.base import RepositoryBase
 from schemas.movie_shot import MovieShotCreateDB, MovieShotUpdateDB
+from signals.event_session import EventSession
 
 
-class MovieShotRepository(IntRepositoryBase[MovieShot, MovieShotCreateDB, MovieShotUpdateDB]):
-    def __init__(self, session: AsyncSession) -> None:
 class MovieShotRepository(RepositoryBase[MovieShot, MovieShotCreateDB, MovieShotUpdateDB]):
+    def __init__(self, session: EventSession) -> None:
         super().__init__(MovieShot, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:

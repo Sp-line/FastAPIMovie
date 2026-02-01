@@ -1,15 +1,14 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Genre
 from exceptions.db import UniqueFieldException, DeleteConstraintException
 from repositories.base import RepositoryBase
 from schemas.genre import GenreCreateDB, GenreUpdateDB
+from signals.event_session import EventSession
 
 
-class GenreRepository(IntRepositoryBase[Genre, GenreCreateDB, GenreUpdateDB]):
-    def __init__(self, session: AsyncSession) -> None:
 class GenreRepository(RepositoryBase[Genre, GenreCreateDB, GenreUpdateDB]):
+    def __init__(self, session: EventSession) -> None:
         super().__init__(Genre, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:

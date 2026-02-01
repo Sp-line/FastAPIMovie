@@ -1,5 +1,4 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import MovieCountryAssociation, MovieGenreAssociation, MoviePersonAssociation
 from exceptions.db import UniqueException, RelatedObjectNotFoundException
@@ -7,6 +6,7 @@ from repositories.base import RepositoryBase
 from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCompositeId
 from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
 from schemas.movie_person import MoviePersonUpdate, MoviePersonCreate, MoviePersonCompositeId
+from signals.event_session import EventSession
 
 
 class MovieCountryRepository(
@@ -17,7 +17,7 @@ class MovieCountryRepository(
         MovieCountryUpdate,
     ]
 ):
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: EventSession) -> None:
         super().__init__(MovieCountryAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
@@ -50,7 +50,7 @@ class MovieGenreRepository(
         MovieGenreUpdate,
     ]
 ):
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: EventSession) -> None:
         super().__init__(MovieGenreAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
@@ -83,7 +83,7 @@ class MoviePersonRepository(
         MoviePersonUpdate,
     ]
 ):
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: EventSession) -> None:
         super().__init__(MoviePersonAssociation, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
