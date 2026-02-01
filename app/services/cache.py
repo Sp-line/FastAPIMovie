@@ -5,17 +5,14 @@ import orjson
 from pydantic import BaseModel
 from redis.asyncio.client import Redis as AsyncRedis
 
-from repositories.abc import RepositoryABC
-from repositories.base import IntRepositoryBase, M2MRepositoryBase
+from repositories.base import RepositoryBase
 from repositories.unit_of_work import UnitOfWork
 from schemas.cache import ModelCacheConfig
-from schemas.m2m import CompositeIdBase
 from services.abc import ServiceABC
 
 
 class CacheServiceABC[
-    IdT,
-    RepositoryBaseType: RepositoryABC,
+    RepositoryBaseType: RepositoryBase,
     ReadSchemaType: BaseModel,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
@@ -24,7 +21,6 @@ class CacheServiceABC[
     ModelCacheConfigType: ModelCacheConfig
 ](
     ServiceABC[
-        IdT,
         RepositoryBaseType,
         ReadSchemaType,
         CreateSchemaType,
@@ -36,7 +32,7 @@ class CacheServiceABC[
 ):
     def __init__(
             self,
-            repository: RepositoryABC[IdT, Any, DBCreateSchemaType, DBUpdateSchemaType],
+            repository: RepositoryBase[Any, DBCreateSchemaType, DBUpdateSchemaType],
             unit_of_work: UnitOfWork,
             table_name: str,
             read_schema_type: type[ReadSchemaType],
@@ -76,10 +72,10 @@ class CacheServiceABC[
 
         return objs
 
-    async def get_by_id(self, obj_id: IdT) -> ReadSchemaType:
+    async def get_by_id(self, obj_id: int) -> ReadSchemaType:
         key = self._cache_model_config.retrieve_key.format(
             table_name=self._table_name,
-            obj_id=self._prepare_id_for_generate_cache_key(obj_id)
+            obj_id=obj_id
         )
 
         if (cached := await self._cache.get(key)) is not None:
@@ -96,56 +92,3 @@ class CacheServiceABC[
         )
 
         return obj
-
-    @staticmethod
-    def _prepare_id_for_generate_cache_key(obj_id: IdT) -> str:
-        return str(obj_id)
-
-
-class IntCacheServiceABC[
-    IntRepositoryBaseType: IntRepositoryBase,
-    ReadSchemaType: BaseModel,
-    CreateSchemaType: BaseModel,
-    UpdateSchemaType: BaseModel,
-    DBCreateSchemaType: BaseModel,
-    DBUpdateSchemaType: BaseModel,
-    ModelCacheConfigType: ModelCacheConfig
-](
-    CacheServiceABC[
-        int,
-        IntRepositoryBaseType,
-        ReadSchemaType,
-        CreateSchemaType,
-        UpdateSchemaType,
-        DBCreateSchemaType,
-        DBUpdateSchemaType,
-        ModelCacheConfigType
-    ],
-    ABC
-):
-    pass
-
-
-class M2MCacheServiceABC[
-    M2MRepositoryBaseType: M2MRepositoryBase,
-    ReadSchemaType: BaseModel,
-    CreateSchemaType: BaseModel,
-    UpdateSchemaType: BaseModel,
-    CompositeIdSchemaType: CompositeIdBase,
-    DBCreateSchemaType: BaseModel,
-    DBUpdateSchemaType: BaseModel,
-    ModelCacheConfigType: ModelCacheConfig
-](
-    CacheServiceABC[
-        CompositeIdSchemaType,
-        M2MRepositoryBaseType,
-        ReadSchemaType,
-        CreateSchemaType,
-        UpdateSchemaType,
-        DBCreateSchemaType,
-        DBUpdateSchemaType,
-        ModelCacheConfigType
-    ],
-    ABC
-):
-    pass
