@@ -1,15 +1,15 @@
 from typing import Annotated, TypeAlias
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper as db
 from repositories.unit_of_work import UnitOfWork
+from signals.event_session import EventSession
 
-AsyncSessionDep: TypeAlias = Annotated[AsyncSession, Depends(db.session_getter)]
+EventSessionDep: TypeAlias = Annotated[EventSession, Depends(db.session_getter)]
 
 
-def get_uow(session: AsyncSessionDep) -> UnitOfWork:
+def get_uow(session: EventSessionDep) -> UnitOfWork:
     return UnitOfWork(session)
 
 
