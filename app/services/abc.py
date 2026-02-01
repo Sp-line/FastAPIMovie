@@ -4,13 +4,12 @@ from typing import Any, cast
 from pydantic import BaseModel
 
 from exceptions.db import ObjectNotFoundException
-from repositories.base import RepositoryABC
+from repositories.base import RepositoryBase
 from repositories.unit_of_work import UnitOfWork
 
 
 class ServiceABC[
-    IdT,
-    RepositoryBaseType: RepositoryABC,
+    RepositoryBaseType: RepositoryBase,
     ReadSchemaType: BaseModel,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
@@ -19,7 +18,7 @@ class ServiceABC[
 ](ABC):
     def __init__(
             self,
-            repository: RepositoryABC[IdT, Any, DBCreateSchemaType, DBUpdateSchemaType],
+            repository: RepositoryBase[Any, DBCreateSchemaType, DBUpdateSchemaType],
             unit_of_work: UnitOfWork,
             table_name: str,
             read_schema_type: type[ReadSchemaType],
@@ -42,23 +41,23 @@ class ServiceABC[
         async with self._uof:
             return self._read_schema_type.model_validate(await self._repository.create(prepared_data))
 
-    async def get_by_id(self, obj_id: IdT) -> ReadSchemaType:
+    async def get_by_id(self, obj_id: int) -> ReadSchemaType:
         if not (obj := await self._repository.get_by_id(obj_id)):
-            raise ObjectNotFoundException[IdT](obj_id, self._table_name)
+            raise ObjectNotFoundException(obj_id, self._table_name)
         return self._read_schema_type.model_validate(obj)
 
-    async def update(self, obj_id: IdT, data: UpdateSchemaType) -> ReadSchemaType:
+    async def update(self, obj_id: int, data: UpdateSchemaType) -> ReadSchemaType:
         prepared_data = self._prepare_update_data(data)
         async with self._uof:
             new_obj = await self._repository.update(obj_id, prepared_data)
             if not new_obj:
-                raise ObjectNotFoundException[IdT](obj_id, self._table_name)
+                raise ObjectNotFoundException(obj_id, self._table_name)
             return self._read_schema_type.model_validate(new_obj)
 
-    async def delete(self, obj_id: IdT) -> None:
+    async def delete(self, obj_id: int) -> None:
         async with self._uof:
             if not await self._repository.delete(obj_id):
-                raise ObjectNotFoundException[IdT](obj_id, self._table_name)
+                raise ObjectNotFoundException(obj_id, self._table_name)
 
     @staticmethod
     @abstractmethod

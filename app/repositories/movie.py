@@ -7,12 +7,13 @@ from sqlalchemy.orm import load_only, selectinload
 
 from core.models import Movie, MoviePersonAssociation
 from exceptions.db import UniqueFieldException
-from repositories.base import IntRepositoryBase
+from repositories.base import RepositoryBase
 from schemas.movie import MovieCreateDB, MovieUpdateDB
 
 
 class MovieRepository(IntRepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
     def __init__(self, session: AsyncSession) -> None:
+class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
         super().__init__(Movie, session)
 
     async def get_for_list(

@@ -2,7 +2,7 @@ from fastapi import UploadFile
 from pydantic import BaseModel
 
 from exceptions.db import ObjectNotFoundException
-from repositories.base import IntRepositoryBase
+from repositories.base import RepositoryBase
 from repositories.unit_of_work import UnitOfWork
 from services.s3 import S3Service
 from storage.abc import FilePathBuilderABC, FileUrlResolverABC, FileServiceABC
@@ -17,7 +17,7 @@ class FileService[
     def __init__(
             self,
             s3_service: S3Service,
-            repository: IntRepositoryBase,
+            repository: RepositoryBase,
             unit_of_work: UnitOfWork,
             read_schema_type: type[TReadSchema],
             update_schema_type: type[TUpdateSchema],
@@ -38,7 +38,7 @@ class FileService[
 
     async def _get_obj(self, obj_id: int) -> TReadSchema:
         if not (obj := await self._repository.get_by_id(obj_id)):
-            raise ObjectNotFoundException[int](obj_id, self._table_name)
+            raise ObjectNotFoundException(obj_id, self._table_name)
         return self._read_schema_type.model_validate(obj)
 
     async def save(self, obj_id: int, file: UploadFile) -> TReadSchema:

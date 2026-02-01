@@ -3,11 +3,11 @@ from slugify import slugify
 from repositories.country import CountryRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq
-from services.base import IntServiceABC
+from services.abc import ServiceABC
 
 
 class CountryService(
-    IntServiceABC[
+    ServiceABC[
         CountryRepository,
         CountryRead,
         CountryCreateReq,

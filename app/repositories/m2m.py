@@ -3,19 +3,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import MovieCountryAssociation, MovieGenreAssociation, MoviePersonAssociation
 from exceptions.db import UniqueException, RelatedObjectNotFoundException
-from repositories.base import M2MRepositoryBase
+from repositories.base import RepositoryBase
 from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCompositeId
 from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
 from schemas.movie_person import MoviePersonUpdate, MoviePersonCreate, MoviePersonCompositeId
 
 
 class MovieCountryRepository(
-    M2MRepositoryBase
+    RepositoryBase
     [
         MovieCountryAssociation,
         MovieCountryCreate,
         MovieCountryUpdate,
-        MovieCountryCompositeId
     ]
 ):
     def __init__(self, session: AsyncSession) -> None:
@@ -44,12 +43,11 @@ class MovieCountryRepository(
 
 
 class MovieGenreRepository(
-    M2MRepositoryBase
+    RepositoryBase
     [
         MovieGenreAssociation,
         MovieGenreCreate,
         MovieGenreUpdate,
-        MovieGenreCompositeId
     ]
 ):
     def __init__(self, session: AsyncSession) -> None:
@@ -78,12 +76,11 @@ class MovieGenreRepository(
 
 
 class MoviePersonRepository(
-    M2MRepositoryBase
+    RepositoryBase
     [
         MoviePersonAssociation,
         MoviePersonCreate,
         MoviePersonUpdate,
-        MoviePersonCompositeId
     ]
 ):
     def __init__(self, session: AsyncSession) -> None:

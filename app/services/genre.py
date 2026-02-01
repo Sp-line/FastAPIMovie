@@ -3,11 +3,11 @@ from slugify import slugify
 from repositories.genre import GenreRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.genre import GenreRead, GenreCreateDB, GenreUpdateDB, GenreCreateReq, GenreUpdateReq
-from services.base import IntServiceABC
+from services.abc import ServiceABC
 
 
 class GenreService(
-    IntServiceABC[
+    ServiceABC[
         GenreRepository,
         GenreRead,
         GenreCreateReq,

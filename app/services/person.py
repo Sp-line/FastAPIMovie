@@ -3,7 +3,7 @@ from slugify import slugify
 from repositories.person import PersonRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
-from services.base import IntServiceABC
+from services.abc import ServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
@@ -11,7 +11,7 @@ from storage.url_resolver import FileUrlResolver
 
 
 class PersonService(
-    IntServiceABC[
+    ServiceABC[
         PersonRepository,
         PersonRead,
         PersonCreateReq,

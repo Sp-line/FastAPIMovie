@@ -3,17 +3,16 @@ from repositories.unit_of_work import UnitOfWork
 from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate, MovieCountryCompositeId
 from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
 from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate, MoviePersonCompositeId
-from services.base import M2MServiceABC
+from services.abc import ServiceABC
 
 
 class MovieCountryService(
-    M2MServiceABC
+    ServiceABC
     [
         MovieCountryRepository,
         MovieCountryRead,
         MovieCountryCreate,
         MovieCountryUpdate,
-        MovieCountryCompositeId,
         MovieCountryCreate,
         MovieCountryUpdate,
     ]
@@ -40,13 +39,12 @@ class MovieCountryService(
 
 
 class MovieGenreService(
-    M2MServiceABC
+    ServiceABC
     [
         MovieGenreRepository,
         MovieGenreRead,
         MovieGenreCreate,
         MovieGenreUpdate,
-        MovieGenreCompositeId,
         MovieGenreCreate,
         MovieGenreUpdate,
     ]
@@ -73,13 +71,12 @@ class MovieGenreService(
 
 
 class MoviePersonService(
-    M2MServiceABC
+    ServiceABC
     [
         MoviePersonRepository,
         MoviePersonRead,
         MoviePersonCreate,
         MoviePersonUpdate,
-        MoviePersonCompositeId,
         MoviePersonCreate,
         MoviePersonUpdate,
     ]

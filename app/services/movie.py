@@ -5,7 +5,7 @@ from repositories.movie import MovieRepository
 from repositories.unit_of_work import UnitOfWork
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
     MovieDetail
-from services.base import IntServiceABC
+from services.abc import ServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
@@ -13,7 +13,7 @@ from storage.url_resolver import FileUrlResolver
 
 
 class MovieService(
-    IntServiceABC[
+    ServiceABC[
         MovieRepository,
         MovieRead,
         MovieCreateReq,

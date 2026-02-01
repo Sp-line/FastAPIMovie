@@ -3,12 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Country
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import IntRepositoryBase
+from repositories.base import RepositoryBase
 from schemas.country import CountryCreateDB, CountryUpdateDB
 
 
 class CountryRepository(IntRepositoryBase[Country, CountryCreateDB, CountryUpdateDB]):
     def __init__(self, session: AsyncSession) -> None:
+class CountryRepository(RepositoryBase[Country, CountryCreateDB, CountryUpdateDB]):
         super().__init__(Country, session)
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:

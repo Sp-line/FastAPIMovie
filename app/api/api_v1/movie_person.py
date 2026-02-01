@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
 from dependencies.services import MoviePersonServiceDep
-from schemas.movie_person import MoviePersonRead, MoviePersonCompositeId, MoviePersonUpdate, MoviePersonCreate
+from schemas.movie_person import MoviePersonRead, MoviePersonUpdate, MoviePersonCreate
 
 router = APIRouter()
 
 
-@router.get("/movie-person-associations")
+@router.get("/")
 async def get_movie_person_associations(
         service: MoviePersonServiceDep,
         skip: int = 0,
@@ -15,32 +15,23 @@ async def get_movie_person_associations(
     return await service.get_all(skip, limit)
 
 
-@router.get("/movies/{movie_id}/persons/{person_id}")
+@router.get("/{movie_person_association_id}")
 async def get_movie_person_association(
-        movie_id: int,
-        person_id: int,
+        movie_person_association_id: int,
         service: MoviePersonServiceDep
 ) -> MoviePersonRead:
-    return await service.get_by_id(MoviePersonCompositeId(person_id=person_id, movie_id=movie_id))
+    return await service.get_by_id(movie_person_association_id)
 
 
-@router.post("/movies/{movie_id}/persons/{person_id}")
+@router.post("/")
 async def create_movie_person_association(
-        movie_id: int,
-        person_id: int,
         data: MoviePersonCreate,
         service: MoviePersonServiceDep
 ) -> MoviePersonRead:
-    return await service.create(
-        MoviePersonCreate(
-            movie_id=movie_id,
-            person_id=person_id,
-            **data.model_dump()
-        )
-    )
+    return await service.create(data)
 
 
-@router.post("/movie-person-associations/bulk")
+@router.post("/bulk")
 async def bulk_create_movie_person_associations(
         data: list[MoviePersonCreate],
         service: MoviePersonServiceDep
@@ -48,23 +39,18 @@ async def bulk_create_movie_person_associations(
     return await service.bulk_create(data)
 
 
-@router.patch("/movies/{movie_id}/persons/{person_id}")
+@router.patch("/{movie_person_association_id}")
 async def update_movie_person_association(
-        movie_id: int,
-        person_id: int,
+        movie_person_association_id: int,
         data: MoviePersonUpdate,
         service: MoviePersonServiceDep
 ) -> MoviePersonRead:
-    return await service.update(
-        MoviePersonCompositeId(movie_id=movie_id, person_id=person_id),
-        data
-    )
+    return await service.update(movie_person_association_id, data)
 
 
-@router.delete("/movies/{movie_id}/persons/{person_id}")
+@router.delete("/{movie_person_association_id}")
 async def delete_movie_person_association(
-        movie_id: int,
-        person_id: int,
+        movie_person_association_id: int,
         service: MoviePersonServiceDep
 ) -> None:
-    return await service.delete(MoviePersonCompositeId(person_id=person_id, movie_id=movie_id))
+    return await service.delete(movie_person_association_id)

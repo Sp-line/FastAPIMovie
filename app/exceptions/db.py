@@ -1,6 +1,3 @@
-from pydantic import BaseModel
-
-
 class DBException(Exception):
     pass
 
@@ -9,20 +6,12 @@ class ObjectException(DBException):
     pass
 
 
-class ObjectNotFoundException[T](ObjectException):
-    def __init__(self, obj_id: T, table_name: str) -> None:
+class ObjectNotFoundException(ObjectException):
+    def __init__(self, obj_id: int, table_name: str) -> None:
         self.table_name = table_name
         self.obj_id = obj_id
 
-        if isinstance(obj_id, BaseModel):
-            id_repr = ", ".join([f"{k}={v}" for k, v in obj_id.model_dump().items()])
-            id_repr = f"({id_repr})"
-        else:
-            id_repr = str(obj_id)
-
-        self.id_repr = id_repr
-
-        super().__init__(f"Object with id {id_repr} not found in table '{table_name}'")
+        super().__init__(f"Object with id={self.obj_id} not found in table '{table_name}'")
 
 
 class UniqueFieldException(DBException):
