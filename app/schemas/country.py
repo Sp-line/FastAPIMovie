@@ -33,3 +33,13 @@ class CountryUpdateDB(CountryUpdateBase):
 
 class CountryUpdateReq(CountryUpdateBase):
     pass
+
+
+class CountryCreateEvent(CountryRead):
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CountryUpdateEvent(CountryUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
