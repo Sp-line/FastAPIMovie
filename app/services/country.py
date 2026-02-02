@@ -1,31 +1,37 @@
+from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.country import CountryRepository
-from repositories.unit_of_work import UnitOfWork
+from repositories.signals import SignalUnitOfWork
+from schemas.cache import ModelCacheConfig
 from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq
-from services.abc import ServiceABC
+from services.cache import CacheServiceABC
 
 
 class CountryService(
-    ServiceABC[
+    CacheServiceABC[
         CountryRepository,
         CountryRead,
         CountryCreateReq,
         CountryUpdateReq,
         CountryCreateDB,
         CountryUpdateDB,
+        ModelCacheConfig
     ]
 ):
     def __init__(
             self,
             repository: CountryRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
+            cache: AsyncRedis,
     ) -> None:
         super().__init__(
             repository=repository,
             unit_of_work=unit_of_work,
             table_name="countries",
             read_schema_type=CountryRead,
+            cache=cache,
+            cache_model_config=ModelCacheConfig()
         )
 
     @staticmethod
