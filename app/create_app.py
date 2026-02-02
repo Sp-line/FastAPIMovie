@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+import event_handlers  # noqa: F401
 from cache import redis_helper
 from core import broker, fs_router
 from core.models import db_helper
