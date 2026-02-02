@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from constants import GenreLimits
 from schemas.base import Id
+from schemas.event import EventSchemas
 
 
 class GenreBase(BaseModel):
@@ -33,3 +34,22 @@ class GenreUpdateDB(GenreUpdateBase):
 
 class GenreUpdateReq(GenreUpdateBase):
     pass
+
+
+class GenreCreateEvent(GenreRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GenreUpdateEvent(GenreUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+genre_event_schemas = EventSchemas[
+    GenreCreateEvent,
+    GenreUpdateEvent,
+    Id
+](
+    create=GenreCreateEvent,
+    update=GenreUpdateEvent,
+    delete=Id
+)
