@@ -3,6 +3,7 @@ from typing import Annotated, TypeAlias
 from fastapi import Depends
 
 from core.models import db_helper as db
+from repositories.signals import SignalUnitOfWork
 from repositories.unit_of_work import UnitOfWork
 from signals.event_session import EventSession
 
@@ -13,4 +14,9 @@ def get_uow(session: EventSessionDep) -> UnitOfWork:
     return UnitOfWork(session)
 
 
+def get_signal_ouw(session: EventSessionDep) -> SignalUnitOfWork:
+    return SignalUnitOfWork(session)
+
+
 UnitOfWorkDep: TypeAlias = Annotated[UnitOfWork, Depends(get_uow)]
+SignalUnitOfWorkDep: TypeAlias = Annotated[SignalUnitOfWork, Depends(get_signal_ouw)]
