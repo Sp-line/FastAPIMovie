@@ -14,4 +14,9 @@ def get_countries_cache_invalidator(cache: RedisDep) -> CacheInvalidatorBase:
     return CacheInvalidatorBase(cache, ModelCacheConfig(), "countries")
 
 
+def get_genres_cache_invalidator(cache: RedisDep) -> CacheInvalidatorBase:
+    return CacheInvalidatorBase(cache, ModelCacheConfig(), "genres")
+
+
 CountryCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_countries_cache_invalidator)]
+GenreCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_genres_cache_invalidator)]
