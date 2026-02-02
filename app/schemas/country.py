@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from constants import CountryLimits
 from schemas.base import Id
+from schemas.event import EventSchemas
 
 
 class CountryBase(BaseModel):
@@ -43,3 +44,14 @@ class CountryCreateEvent(CountryRead):
 
 class CountryUpdateEvent(CountryUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
+
+
+country_event_schemas = EventSchemas[
+    CountryCreateEvent,
+    CountryUpdateEvent,
+    Id
+](
+    create=CountryCreateEvent,
+    update=CountryUpdateEvent,
+    delete=Id
+)
