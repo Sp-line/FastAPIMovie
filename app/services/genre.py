@@ -2,7 +2,7 @@ from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.genre import GenreRepository
-from repositories.unit_of_work import UnitOfWork
+from repositories.signals import SignalUnitOfWork
 from schemas.cache import ModelCacheConfig
 from schemas.genre import GenreRead, GenreCreateDB, GenreUpdateDB, GenreCreateReq, GenreUpdateReq
 from services.cache import CacheServiceABC
@@ -22,7 +22,7 @@ class GenreService(
     def __init__(
             self,
             repository: GenreRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
             cache: AsyncRedis
     ) -> None:
         super().__init__(
