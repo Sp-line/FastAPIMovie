@@ -1,9 +1,13 @@
+from redis.asyncio.client import Redis as AsyncRedis
+
 from repositories.m2m import MovieCountryRepository, MovieGenreRepository, MoviePersonRepository
 from repositories.signals import SignalUnitOfWork
+from schemas.cache import ModelCacheConfig
 from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate
 from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate
 from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate
 from services.abc import ServiceABC
+from services.cache import CacheServiceABC
 
 
 class MovieCountryService(
@@ -71,7 +75,7 @@ class MovieGenreService(
 
 
 class MoviePersonService(
-    ServiceABC
+    CacheServiceABC
     [
         MoviePersonRepository,
         MoviePersonRead,
@@ -79,18 +83,22 @@ class MoviePersonService(
         MoviePersonUpdate,
         MoviePersonCreate,
         MoviePersonUpdate,
+        ModelCacheConfig
     ]
 ):
     def __init__(
             self,
             repository: MoviePersonRepository,
             unit_of_work: SignalUnitOfWork,
+            cache: AsyncRedis,
     ) -> None:
         super().__init__(
             repository=repository,
             unit_of_work=unit_of_work,
             table_name="movie_person_associations",
             read_schema_type=MoviePersonRead,
+            cache=cache,
+            cache_model_config=ModelCacheConfig()
         )
 
     @staticmethod

@@ -1,3 +1,4 @@
 import event_handlers.country
 import event_handlers.genre
 import event_handlers.person
+import event_handlers.movie_person

@@ -41,8 +41,9 @@ def get_movie_genre_service(
 def get_movie_person_service(
         repository: MoviePersonRepositoryDep,
         uow: SignalUnitOfWorkDep,
+        cache: RedisDep
 ) -> MoviePersonService:
-    return MoviePersonService(repository, uow)
+    return MoviePersonService(repository, uow, cache)
 
 
 def get_movie_file_service(
