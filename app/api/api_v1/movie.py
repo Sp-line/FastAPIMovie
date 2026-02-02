@@ -7,13 +7,23 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_movies(service: MovieServiceDep, skip: int = 0, limit: int = 100) -> list[MovieList]:
+async def get_movies(service: MovieServiceDep, skip: int = 0, limit: int = 100) -> list[MovieRead]:
     return await service.get_all(skip, limit)
 
 
 @router.get("/{movie_id}")
-async def get_movie(movie_id: int, service: MovieServiceDep) -> MovieDetail:
+async def get_movie(movie_id: int, service: MovieServiceDep) -> MovieRead:
     return await service.get_by_id(movie_id)
+
+
+@router.get("/list/")
+async def get_movies_for_list(service: MovieServiceDep, skip: int = 0, limit: int = 100) -> list[MovieList]:
+    return await service.get_for_list(skip, limit)
+
+
+@router.get("/detail/{movie_id}")
+async def get_movie_for_detail(movie_id: int, service: MovieServiceDep) -> MovieDetail:
+    return await service.get_for_detail(movie_id)
 
 
 @router.post("/")

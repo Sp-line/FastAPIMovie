@@ -1,6 +1,5 @@
 from repositories.movie_shot import MovieShotRepository
 from repositories.signals import SignalUnitOfWork
-from repositories.unit_of_work import UnitOfWork
 from schemas.movie_shot import MovieShotRead, MovieShotCreateReq, MovieShotCreateDB, MovieShotUpdateDB, \
     MovieShotUpdateReq
 from services.abc import ServiceABC
@@ -46,7 +45,7 @@ class MovieShotFileService(FileService[MovieShotRead, MovieShotUpdateDB]):
             self,
             s3_service: S3Service,
             repository: MovieShotRepository,
-            unit_of_work: UnitOfWork
+            unit_of_work: SignalUnitOfWork
     ):
         super().__init__(
             s3_service=s3_service,

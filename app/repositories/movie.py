@@ -6,14 +6,31 @@ from sqlalchemy.orm import load_only, selectinload
 
 from core.models import Movie, MoviePersonAssociation
 from exceptions.db import UniqueFieldException
-from repositories.base import RepositoryBase
-from schemas.movie import MovieCreateDB, MovieUpdateDB
+from repositories.signals import SignalRepositoryBase
+from schemas.base import Id
+from schemas.movie import MovieCreateDB, MovieUpdateDB, MovieCreateEvent, MovieUpdateEvent, movie_event_schemas
+from signals.base import Eventer
 from signals.event_session import EventSession
+from signals.movie import movie_base_publishers
 
 
-class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
+class MovieRepository(
+    SignalRepositoryBase[
+        Movie,
+        MovieCreateDB,
+        MovieUpdateDB,
+        MovieCreateEvent,
+        MovieUpdateEvent,
+        Id
+    ]
+):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(Movie, session)
+        super().__init__(
+            Movie,
+            session,
+            Eventer(movie_base_publishers),
+            movie_event_schemas
+        )
 
     async def get_for_list(
             self,
@@ -40,7 +57,7 @@ class MovieRepository(RepositoryBase[Movie, MovieCreateDB, MovieUpdateDB]):
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
-    async def get_for_read(self, movie_id: int) -> Movie | None:
+    async def get_for_detail(self, movie_id: int) -> Movie | None:
         stmt = (
             select(Movie)
             .where(Movie.id == movie_id)

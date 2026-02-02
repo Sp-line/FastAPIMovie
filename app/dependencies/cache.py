@@ -26,7 +26,12 @@ def get_movie_person_cache_invalidator(cache: RedisDep) -> CacheInvalidatorBase:
     return CacheInvalidatorBase(cache, ModelCacheConfig(), "movie_person_associations")
 
 
+def get_movie_cache_invalidator(cache: RedisDep) -> CacheInvalidatorBase:
+    return CacheInvalidatorBase(cache, ModelCacheConfig(), "movies")
+
+
 CountryCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_countries_cache_invalidator)]
 GenreCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_genres_cache_invalidator)]
 PersonCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_persons_cache_invalidator)]
 MoviePersonCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_movie_person_cache_invalidator)]
+MovieCacheInvalidatorDep: TypeAlias = Annotated[CacheInvalidatorBase, Depends(get_movie_cache_invalidator)]

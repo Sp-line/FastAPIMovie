@@ -3,7 +3,6 @@ from slugify import slugify
 
 from repositories.person import PersonRepository
 from repositories.signals import SignalUnitOfWork
-from repositories.unit_of_work import UnitOfWork
 from schemas.cache import ModelCacheConfig
 from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
 from services.cache import CacheServiceABC
@@ -56,7 +55,7 @@ class PersonFileService(FileService[PersonRead, PersonUpdateDB]):
             self,
             s3_service: S3Service,
             repository: PersonRepository,
-            unit_of_work: UnitOfWork
+            unit_of_work: SignalUnitOfWork
     ):
         super().__init__(
             s3_service=s3_service,

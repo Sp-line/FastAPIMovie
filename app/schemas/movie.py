@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from constants import MovieLimits, ImageUrlLimits
 from schemas.base import Id
 from schemas.country import CountryRead
+from schemas.event import EventSchemas
 from schemas.genre import GenreRead
 from schemas.movie_person import MoviePersonRelatedRead
 from schemas.movie_shot import MovieRelatedShotRead
@@ -78,3 +79,22 @@ class MovieList(MovieSummaryBase):
     genres: Annotated[list[GenreRead], Field(default_factory=list)]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCreateEvent(MovieRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieUpdateEvent(MovieUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+movie_event_schemas = EventSchemas[
+    MovieCreateEvent,
+    MovieUpdateEvent,
+    Id
+](
+    create=MovieCreateEvent,
+    update=MovieUpdateEvent,
+    delete=Id
+)

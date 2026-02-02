@@ -3,7 +3,7 @@ from typing import Annotated, TypeAlias
 from fastapi import Depends
 
 from dependencies.cache import RedisDep
-from dependencies.db import UnitOfWorkDep, SignalUnitOfWorkDep
+from dependencies.db import SignalUnitOfWorkDep
 from dependencies.repositories import MovieRepositoryDep, \
     MovieCountryRepositoryDep, \
     MovieGenreRepositoryDep, \
@@ -19,9 +19,10 @@ from services.person import PersonService, PersonFileService
 
 def get_movie_service(
         repository: MovieRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
+        cache: RedisDep
 ) -> MovieService:
-    return MovieService(repository, uow)
+    return MovieService(repository, uow, cache)
 
 
 def get_movie_country_service(
@@ -48,7 +49,7 @@ def get_movie_person_service(
 
 def get_movie_file_service(
         repository: MovieRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
         s3: S3ServiceDep,
 ) -> MovieFileService:
     return MovieFileService(s3, repository, uow)
@@ -64,7 +65,7 @@ def get_person_service(
 
 def get_person_file_service(
         repository: PersonRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
         s3: S3ServiceDep,
 ) -> PersonFileService:
     return PersonFileService(s3, repository, uow)
@@ -79,7 +80,7 @@ def get_movie_shot_service(
 
 def get_movie_shot_file_service(
         repository: MovieShotRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
         s3: S3ServiceDep,
 ) -> MovieShotFileService:
     return MovieShotFileService(s3, repository, uow)

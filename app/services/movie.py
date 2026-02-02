@@ -2,36 +2,42 @@ from slugify import slugify
 
 from exceptions.db import ObjectNotFoundException
 from repositories.movie import MovieRepository
-from repositories.unit_of_work import UnitOfWork
+from repositories.signals import SignalUnitOfWork
+from schemas.cache import ModelCacheConfig
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
     MovieDetail
-from services.abc import ServiceABC
+from services.cache import CacheServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
 from storage.url_resolver import FileUrlResolver
+from redis.asyncio.client import Redis as AsyncRedis
 
 
 class MovieService(
-    ServiceABC[
+    CacheServiceABC[
         MovieRepository,
         MovieRead,
         MovieCreateReq,
         MovieUpdateReq,
         MovieCreateDB,
-        MovieUpdateDB
+        MovieUpdateDB,
+        ModelCacheConfig
     ]
 ):
     def __init__(
             self,
             repository: MovieRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
+            cache: AsyncRedis
     ) -> None:
         super().__init__(
             repository=repository,
             unit_of_work=unit_of_work,
             table_name="movies",
-            read_schema_type=MovieRead
+            read_schema_type=MovieRead,
+            cache=cache,
+            cache_model_config=ModelCacheConfig()
         )
 
     @staticmethod
@@ -45,12 +51,12 @@ class MovieService(
             slug=slugify(data.title)
         )
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> list[MovieList]:
+    async def get_for_list(self, skip: int = 0, limit: int = 100) -> list[MovieList]:
         items = await self._repository.get_for_list(skip, limit)
         return [MovieList.model_validate(movie) for movie in items]
 
-    async def get_by_id(self, movie_id: int) -> MovieDetail:
-        if not (movie := await self._repository.get_for_read(movie_id)):
+    async def get_for_detail(self, movie_id: int) -> MovieDetail:
+        if not (movie := await self._repository.get_for_detail(movie_id)):
             raise ObjectNotFoundException(movie_id, self._table_name)
         return MovieDetail.model_validate(movie)
 
@@ -60,7 +66,7 @@ class MovieFileService(FileService[MovieRead, MovieUpdateDB]):
             self,
             s3_service: S3Service,
             repository: MovieRepository,
-            unit_of_work: UnitOfWork
+            unit_of_work: SignalUnitOfWork
     ):
         super().__init__(
             s3_service=s3_service,
