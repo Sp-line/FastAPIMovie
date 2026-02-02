@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 from constants import MovieRoleType
 from schemas.base import Id
+from schemas.event import EventSchemas
 from schemas.m2m import CompositeIdBase
 from schemas.person import PersonRead
 
@@ -33,3 +34,22 @@ class MoviePersonRelatedRead(MoviePersonBase):
     person: PersonRead
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MoviePersonCreateEvent(MoviePersonRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MoviePersonUpdateEvent(MoviePersonUpdate, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+movie_person_event_schemas = EventSchemas[
+    MoviePersonCreateEvent,
+    MoviePersonUpdateEvent,
+    Id
+](
+    create=MoviePersonCreateEvent,
+    update=MoviePersonUpdateEvent,
+    delete=Id
+)

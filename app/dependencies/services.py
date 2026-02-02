@@ -26,21 +26,21 @@ def get_movie_service(
 
 def get_movie_country_service(
         repository: MovieCountryRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
 ) -> MovieCountryService:
     return MovieCountryService(repository, uow)
 
 
 def get_movie_genre_service(
         repository: MovieGenreRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
 ) -> MovieGenreService:
     return MovieGenreService(repository, uow)
 
 
 def get_movie_person_service(
         repository: MoviePersonRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
 ) -> MoviePersonService:
     return MoviePersonService(repository, uow)
 

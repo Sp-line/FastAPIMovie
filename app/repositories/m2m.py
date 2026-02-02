@@ -2,23 +2,39 @@ from sqlalchemy.exc import IntegrityError
 
 from core.models import MovieCountryAssociation, MovieGenreAssociation, MoviePersonAssociation
 from exceptions.db import UniqueException, RelatedObjectNotFoundException
-from repositories.base import RepositoryBase
-from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCompositeId
-from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
-from schemas.movie_person import MoviePersonUpdate, MoviePersonCreate, MoviePersonCompositeId
+from repositories.signals import SignalRepositoryBase
+from schemas.base import Id
+from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCreateEvent, \
+    MovieCountryUpdateEvent, movie_country_event_schemas
+from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCreateEvent, \
+    MovieGenreUpdateEvent, movie_genre_event_schemas
+from schemas.movie_person import MoviePersonUpdate, MoviePersonCreate, MoviePersonCreateEvent, \
+    MoviePersonUpdateEvent, movie_person_event_schemas
+from signals.base import Eventer
 from signals.event_session import EventSession
+from signals.movie_country import movie_country_base_publishers
+from signals.movie_genre import movie_genre_base_publishers
+from signals.movie_person import movie_person_base_publishers
 
 
 class MovieCountryRepository(
-    RepositoryBase
+    SignalRepositoryBase
     [
         MovieCountryAssociation,
         MovieCountryCreate,
         MovieCountryUpdate,
+        MovieCountryCreateEvent,
+        MovieCountryUpdateEvent,
+        Id,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(MovieCountryAssociation, session)
+        super().__init__(
+            MovieCountryAssociation,
+            session,
+            Eventer(movie_country_base_publishers),
+            movie_country_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
@@ -43,15 +59,23 @@ class MovieCountryRepository(
 
 
 class MovieGenreRepository(
-    RepositoryBase
+    SignalRepositoryBase
     [
         MovieGenreAssociation,
         MovieGenreCreate,
         MovieGenreUpdate,
+        MovieGenreCreateEvent,
+        MovieGenreUpdateEvent,
+        Id,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(MovieGenreAssociation, session)
+        super().__init__(
+            MovieGenreAssociation,
+            session,
+            Eventer(movie_genre_base_publishers),
+            movie_genre_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
@@ -76,15 +100,23 @@ class MovieGenreRepository(
 
 
 class MoviePersonRepository(
-    RepositoryBase
+    SignalRepositoryBase
     [
         MoviePersonAssociation,
         MoviePersonCreate,
         MoviePersonUpdate,
+        MoviePersonCreateEvent,
+        MoviePersonUpdateEvent,
+        Id,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(MoviePersonAssociation, session)
+        super().__init__(
+            MoviePersonAssociation,
+            session,
+            Eventer(movie_person_base_publishers),
+            movie_person_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)

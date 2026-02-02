@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from schemas.base import Id
+from schemas.event import EventSchemas
 from schemas.m2m import CompositeIdBase
 
 
@@ -24,3 +25,22 @@ class MovieCountryUpdate(BaseModel):
 
 class MovieCountryRead(MovieCountryBase, Id):
     model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCountryCreateEvent(MovieCountryRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCountryUpdateEvent(MovieCountryUpdate, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+movie_country_event_schemas = EventSchemas[
+    MovieCountryCreateEvent,
+    MovieCountryUpdateEvent,
+    Id
+](
+    create=MovieCountryCreateEvent,
+    update=MovieCountryUpdateEvent,
+    delete=Id
+)

@@ -1,8 +1,8 @@
 from repositories.m2m import MovieCountryRepository, MovieGenreRepository, MoviePersonRepository
-from repositories.unit_of_work import UnitOfWork
-from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate, MovieCountryCompositeId
-from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate, MovieGenreCompositeId
-from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate, MoviePersonCompositeId
+from repositories.signals import SignalUnitOfWork
+from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate
+from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate
+from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate
 from services.abc import ServiceABC
 
 
@@ -20,7 +20,7 @@ class MovieCountryService(
     def __init__(
             self,
             repository: MovieCountryRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
     ) -> None:
         super().__init__(
             repository=repository,
@@ -52,7 +52,7 @@ class MovieGenreService(
     def __init__(
             self,
             repository: MovieGenreRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
     ) -> None:
         super().__init__(
             repository=repository,
@@ -84,7 +84,7 @@ class MoviePersonService(
     def __init__(
             self,
             repository: MoviePersonRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
     ) -> None:
         super().__init__(
             repository=repository,
@@ -100,4 +100,3 @@ class MoviePersonService(
     @staticmethod
     def _prepare_update_data(data: MoviePersonUpdate) -> MoviePersonUpdate:
         return data
-
