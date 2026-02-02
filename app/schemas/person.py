@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 from constants import ImageUrlLimits, PersonLimits
 from schemas.base import Id
+from schemas.event import EventSchemas
 
 
 class PersonBase(BaseModel):
@@ -35,3 +36,22 @@ class PersonUpdateReq(PersonUpdateBase):
 
 class PersonRead(PersonBase, Id):
     model_config = ConfigDict(from_attributes=True)
+
+
+class PersonCreateEvent(PersonRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PersonUpdateEvent(PersonUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+person_event_schemas = EventSchemas[
+    PersonCreateEvent,
+    PersonUpdateEvent,
+    Id
+](
+    create=PersonCreateEvent,
+    update=PersonUpdateEvent,
+    delete=Id
+)
