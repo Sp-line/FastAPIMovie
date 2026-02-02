@@ -2,7 +2,8 @@ from typing import Annotated, TypeAlias
 
 from fastapi import Depends
 
-from dependencies.db import UnitOfWorkDep
+from dependencies.cache import RedisDep
+from dependencies.db import UnitOfWorkDep, SignalUnitOfWorkDep
 from dependencies.repositories import MovieRepositoryDep, \
     MovieCountryRepositoryDep, \
     MovieGenreRepositoryDep, \
@@ -84,9 +85,10 @@ def get_movie_shot_file_service(
 
 def get_country_service(
         repository: CountryRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
+        cache: RedisDep
 ) -> CountryService:
-    return CountryService(repository, uow)
+    return CountryService(repository, uow, cache)
 
 
 def get_genre_service(
