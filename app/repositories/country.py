@@ -2,14 +2,32 @@ from sqlalchemy.exc import IntegrityError
 
 from core.models import Country
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import RepositoryBase
-from schemas.country import CountryCreateDB, CountryUpdateDB
+from repositories.signals import SignalRepositoryBase
+from schemas.base import Id
+from schemas.country import CountryCreateDB, CountryUpdateDB, CountryCreateEvent, CountryUpdateEvent, \
+    country_event_schemas
+from signals.base import Eventer
+from signals.country import country_base_publishers
 from signals.event_session import EventSession
 
 
-class CountryRepository(RepositoryBase[Country, CountryCreateDB, CountryUpdateDB]):
+class CountryRepository(
+    SignalRepositoryBase[
+        Country,
+        CountryCreateDB,
+        CountryUpdateDB,
+        CountryCreateEvent,
+        CountryUpdateEvent,
+        Id
+    ]
+):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(Country, session)
+        super().__init__(
+            Country,
+            session,
+            Eventer(publishers=country_base_publishers),
+            country_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
