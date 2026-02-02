@@ -1,1 +1,2 @@
 import event_handlers.country
+import event_handlers.genre
