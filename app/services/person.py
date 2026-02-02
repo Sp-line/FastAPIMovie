@@ -1,9 +1,12 @@
+from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.person import PersonRepository
+from repositories.signals import SignalUnitOfWork
 from repositories.unit_of_work import UnitOfWork
+from schemas.cache import ModelCacheConfig
 from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
-from services.abc import ServiceABC
+from services.cache import CacheServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
@@ -11,25 +14,29 @@ from storage.url_resolver import FileUrlResolver
 
 
 class PersonService(
-    ServiceABC[
+    CacheServiceABC[
         PersonRepository,
         PersonRead,
         PersonCreateReq,
         PersonUpdateReq,
         PersonCreateDB,
-        PersonUpdateDB
+        PersonUpdateDB,
+        ModelCacheConfig
     ]
 ):
     def __init__(
             self,
             repository: PersonRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
+            cache: AsyncRedis
     ) -> None:
         super().__init__(
             repository=repository,
             unit_of_work=unit_of_work,
             table_name="persons",
             read_schema_type=PersonRead,
+            cache=cache,
+            cache_model_config=ModelCacheConfig()
         )
 
     @staticmethod

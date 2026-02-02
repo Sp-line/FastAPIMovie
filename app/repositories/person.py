@@ -2,14 +2,31 @@ from sqlalchemy.exc import IntegrityError
 
 from core.models import Person
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import RepositoryBase
-from schemas.person import PersonCreateDB, PersonUpdateDB
+from repositories.signals import SignalRepositoryBase
+from schemas.base import Id
+from schemas.person import PersonCreateDB, PersonUpdateDB, PersonCreateEvent, PersonUpdateEvent, person_event_schemas
+from signals.base import Eventer
 from signals.event_session import EventSession
+from signals.person import person_base_publishers
 
 
-class PersonRepository(RepositoryBase[Person, PersonCreateDB, PersonUpdateDB]):
+class PersonRepository(
+    SignalRepositoryBase[
+        Person,
+        PersonCreateDB,
+        PersonUpdateDB,
+        PersonCreateEvent,
+        PersonUpdateEvent,
+        Id
+    ]
+):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(Person, session)
+        super().__init__(
+            Person,
+            session,
+            Eventer(publishers=person_base_publishers),
+            person_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
