@@ -1,31 +1,37 @@
+from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.genre import GenreRepository
 from repositories.unit_of_work import UnitOfWork
+from schemas.cache import ModelCacheConfig
 from schemas.genre import GenreRead, GenreCreateDB, GenreUpdateDB, GenreCreateReq, GenreUpdateReq
-from services.abc import ServiceABC
+from services.cache import CacheServiceABC
 
 
 class GenreService(
-    ServiceABC[
+    CacheServiceABC[
         GenreRepository,
         GenreRead,
         GenreCreateReq,
         GenreUpdateReq,
         GenreCreateDB,
-        GenreUpdateDB
+        GenreUpdateDB,
+        ModelCacheConfig
     ]
 ):
     def __init__(
             self,
             repository: GenreRepository,
             unit_of_work: UnitOfWork,
+            cache: AsyncRedis
     ) -> None:
         super().__init__(
             repository=repository,
             unit_of_work=unit_of_work,
             table_name="genres",
             read_schema_type=GenreRead,
+            cache=cache,
+            cache_model_config=ModelCacheConfig()
         )
 
     @staticmethod

@@ -93,9 +93,10 @@ def get_country_service(
 
 def get_genre_service(
         repository: GenreRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
+        cache: RedisDep,
 ) -> GenreService:
-    return GenreService(repository, uow)
+    return GenreService(repository, uow, cache)
 
 
 MovieServiceDep: TypeAlias = Annotated[MovieService, Depends(get_movie_service)]

@@ -2,14 +2,31 @@ from sqlalchemy.exc import IntegrityError
 
 from core.models import Genre
 from exceptions.db import UniqueFieldException, DeleteConstraintException
-from repositories.base import RepositoryBase
-from schemas.genre import GenreCreateDB, GenreUpdateDB
+from repositories.signals import SignalRepositoryBase
+from schemas.base import Id
+from schemas.genre import GenreCreateDB, GenreUpdateDB, GenreCreateEvent, GenreUpdateEvent, genre_event_schemas
+from signals.base import Eventer
 from signals.event_session import EventSession
+from signals.genre import genre_base_publishers
 
 
-class GenreRepository(RepositoryBase[Genre, GenreCreateDB, GenreUpdateDB]):
+class GenreRepository(
+    SignalRepositoryBase[
+        Genre,
+        GenreCreateDB,
+        GenreUpdateDB,
+        GenreCreateEvent,
+        GenreUpdateEvent,
+        Id
+    ]
+):
     def __init__(self, session: EventSession) -> None:
-        super().__init__(Genre, session)
+        super().__init__(
+            Genre,
+            session,
+            Eventer(publishers=genre_base_publishers),
+            genre_event_schemas
+        )
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
