@@ -71,7 +71,7 @@ def get_person_file_service(
 
 def get_movie_shot_service(
         repository: MovieShotRepositoryDep,
-        uow: UnitOfWorkDep,
+        uow: SignalUnitOfWorkDep,
 ) -> MovieShotService:
     return MovieShotService(repository, uow)
 

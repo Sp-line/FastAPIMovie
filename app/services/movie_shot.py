@@ -1,4 +1,5 @@
 from repositories.movie_shot import MovieShotRepository
+from repositories.signals import SignalUnitOfWork
 from repositories.unit_of_work import UnitOfWork
 from schemas.movie_shot import MovieShotRead, MovieShotCreateReq, MovieShotCreateDB, MovieShotUpdateDB, \
     MovieShotUpdateReq
@@ -22,7 +23,7 @@ class MovieShotService(
     def __init__(
             self,
             repository: MovieShotRepository,
-            unit_of_work: UnitOfWork,
+            unit_of_work: SignalUnitOfWork,
     ) -> None:
         super().__init__(
             repository=repository,

@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 from constants import ImageUrlLimits, MovieShotLimits
 from schemas.base import Id
+from schemas.event import EventSchemas
 
 
 class MovieShotBase(BaseModel):
@@ -43,3 +44,24 @@ class MovieRelatedShotRead(MovieShotBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MovieShotCreateEvent(MovieShotRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieShotUpdateEvent(MovieShotUpdateDB, Id):
+    movie_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+movie_shot_event_schemas = EventSchemas[
+    MovieShotCreateEvent,
+    MovieShotUpdateEvent,
+    Id
+](
+    create=MovieShotCreateEvent,
+    update=MovieShotUpdateEvent,
+    delete=Id
+)
