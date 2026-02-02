@@ -37,8 +37,6 @@ class CountryUpdateReq(CountryUpdateBase):
 
 
 class CountryCreateEvent(CountryRead):
-    name: str
-
     model_config = ConfigDict(from_attributes=True)
 
 
