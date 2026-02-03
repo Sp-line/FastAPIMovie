@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from dependencies.services import MoviePersonServiceDep
-from schemas.movie_person import MoviePersonRead, MoviePersonUpdate, MoviePersonCreate
+from schemas.movie_person import MoviePersonRead, MoviePersonUpdateReq, MoviePersonCreate
 
 router = APIRouter()
 
@@ -42,7 +42,7 @@ async def bulk_create_movie_person_associations(
 @router.patch("/{movie_person_association_id}")
 async def update_movie_person_association(
         movie_person_association_id: int,
-        data: MoviePersonUpdate,
+        data: MoviePersonUpdateReq,
         service: MoviePersonServiceDep
 ) -> MoviePersonRead:
     return await service.update(movie_person_association_id, data)

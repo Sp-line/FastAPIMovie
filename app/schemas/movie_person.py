@@ -20,10 +20,17 @@ class MoviePersonCreate(MoviePersonBase):
     pass
 
 
-class MoviePersonUpdate(BaseModel):
+class MoviePersonUpdateBase(BaseModel):
+    role: MovieRoleType | None = None
+
+
+class MoviePersonUpdateDB(MoviePersonUpdateBase):
     movie_id: int | None = None
     person_id: int | None = None
-    role: MovieRoleType | None = None
+
+
+class MoviePersonUpdateReq(MoviePersonUpdateBase):
+    pass
 
 
 class MoviePersonRead(MoviePersonBase, Id):
@@ -40,7 +47,7 @@ class MoviePersonCreateEvent(MoviePersonRead):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MoviePersonUpdateEvent(MoviePersonUpdate, Id):
+class MoviePersonUpdateEvent(MoviePersonUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
 
 

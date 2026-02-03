@@ -8,7 +8,7 @@ from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieC
     MovieCountryUpdateEvent, movie_country_event_schemas
 from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCreateEvent, \
     MovieGenreUpdateEvent, movie_genre_event_schemas
-from schemas.movie_person import MoviePersonUpdate, MoviePersonCreate, MoviePersonCreateEvent, \
+from schemas.movie_person import MoviePersonUpdateDB, MoviePersonCreate, MoviePersonCreateEvent, \
     MoviePersonUpdateEvent, movie_person_event_schemas
 from signals.base import Eventer
 from signals.event_session import EventSession
@@ -104,7 +104,7 @@ class MoviePersonRepository(
     [
         MoviePersonAssociation,
         MoviePersonCreate,
-        MoviePersonUpdate,
+        MoviePersonUpdateDB,
         MoviePersonCreateEvent,
         MoviePersonUpdateEvent,
         Id,

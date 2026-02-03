@@ -5,7 +5,7 @@ from repositories.signals import SignalUnitOfWork
 from schemas.cache import ModelCacheConfig
 from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate
 from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate
-from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdate
+from schemas.movie_person import MoviePersonRead, MoviePersonCreate, MoviePersonUpdateReq, MoviePersonUpdateDB
 from services.abc import ServiceABC
 from services.cache import CacheServiceABC
 
@@ -80,9 +80,9 @@ class MoviePersonService(
         MoviePersonRepository,
         MoviePersonRead,
         MoviePersonCreate,
-        MoviePersonUpdate,
+        MoviePersonUpdateReq,
         MoviePersonCreate,
-        MoviePersonUpdate,
+        MoviePersonUpdateDB,
         ModelCacheConfig
     ]
 ):
@@ -106,5 +106,5 @@ class MoviePersonService(
         return data
 
     @staticmethod
-    def _prepare_update_data(data: MoviePersonUpdate) -> MoviePersonUpdate:
-        return data
+    def _prepare_update_data(data: MoviePersonUpdateReq) -> MoviePersonUpdateDB:
+        return MoviePersonUpdateDB(**data.model_dump(exclude_unset=True))
