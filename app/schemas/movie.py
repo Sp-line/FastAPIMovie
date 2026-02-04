@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 from constants import MovieLimits, ImageUrlLimits
 from schemas.base import Id
+from schemas.cache import ModelCacheConfig
 from schemas.country import CountryRead
 from schemas.event import EventSchemas
 from schemas.genre import GenreRead
@@ -87,6 +88,13 @@ class MovieCreateEvent(MovieRead):
 
 class MovieUpdateEvent(MovieUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCacheConfig(ModelCacheConfig):
+    list_summary_key: str = "{table_name}:list:summary:skip={skip}:limit={limit}"
+    list_summary_ttl: int = 14400
+    detail_key: str = "{table_name}:detail:id={obj_id}"
+    detail_ttl: int = 14400
 
 
 movie_event_schemas = EventSchemas[
