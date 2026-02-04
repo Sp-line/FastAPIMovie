@@ -1,6 +1,8 @@
 from abc import ABC
 
 from pydantic import BaseModel
+from sqlalchemy import delete
+from sqlalchemy.exc import IntegrityError
 
 from core.models.mixins.int_id_pk import IntIdPkMixin
 from repositories.base import RepositoryBase
@@ -68,13 +70,27 @@ class SignalRepositoryBase[
         return model
 
     async def delete(self, obj_id: int) -> bool:
-        if deleted := await super().delete(obj_id):
+        stmt = (
+            delete(self._model)
+            .where(self._model.id == obj_id)
+            .returning(self._model)
+        )
+
+        try:
+            result = await self._session.execute(stmt)
+            deleted_row = result.scalar_one_or_none()
+        except IntegrityError as e:
+            self._handle_integrity_error(e)
+            raise
+
+        if deleted_row:
             self._session.events.append(
                 self._eventer.delete(
-                    self.event_schemas.delete(id=obj_id)
+                    self.event_schemas.delete.model_validate(deleted_row)
                 )
             )
-        return deleted
+            return True
+        return False
 
 
 class SignalUnitOfWork(UnitOfWork):
