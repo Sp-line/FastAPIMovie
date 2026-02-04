@@ -3,9 +3,8 @@ from sqlalchemy.exc import IntegrityError
 from core.models import MovieShot
 from exceptions.db import RelatedObjectNotFoundException
 from repositories.signals import SignalRepositoryBase
-from schemas.base import Id
 from schemas.movie_shot import MovieShotCreateDB, MovieShotUpdateDB, MovieShotCreateEvent, MovieShotUpdateEvent, \
-    movie_shot_event_schemas
+    movie_shot_event_schemas, MovieShotDeleteEvent
 from signals.base import Eventer
 from signals.event_session import EventSession
 from signals.movie_shot import movie_shot_base_publishers
@@ -18,7 +17,7 @@ class MovieShotRepository(
         MovieShotUpdateDB,
         MovieShotCreateEvent,
         MovieShotUpdateEvent,
-        Id,
+        MovieShotDeleteEvent,
     ]
 ):
     def __init__(self, session: EventSession) -> None:

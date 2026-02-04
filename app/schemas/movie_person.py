@@ -47,16 +47,20 @@ class MoviePersonCreateEvent(MoviePersonRead):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MoviePersonUpdateEvent(MoviePersonUpdateDB, Id):
+class MoviePersonUpdateEvent(MoviePersonBase, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MoviePersonDeleteEvent(MoviePersonCompositeId, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
 movie_person_event_schemas = EventSchemas[
     MoviePersonCreateEvent,
     MoviePersonUpdateEvent,
-    Id
+    MoviePersonDeleteEvent
 ](
     create=MoviePersonCreateEvent,
     update=MoviePersonUpdateEvent,
-    delete=Id
+    delete=MoviePersonDeleteEvent
 )

@@ -35,12 +35,16 @@ class MovieCountryUpdateEvent(MovieCountryUpdate, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class MovieCountryDeleteEvent(MovieCountryCompositeId, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
 movie_country_event_schemas = EventSchemas[
     MovieCountryCreateEvent,
     MovieCountryUpdateEvent,
-    Id
+    MovieCountryDeleteEvent
 ](
     create=MovieCountryCreateEvent,
     update=MovieCountryUpdateEvent,
-    delete=Id
+    delete=MovieCountryDeleteEvent
 )

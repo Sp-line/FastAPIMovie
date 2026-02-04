@@ -35,12 +35,16 @@ class MovieGenreUpdateEvent(MovieGenreUpdate, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class MovieGenreDeleteEvent(MovieGenreCompositeId, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
 movie_genre_event_schemas = EventSchemas[
     MovieGenreCreateEvent,
     MovieGenreUpdateEvent,
-    Id
+    MovieGenreDeleteEvent
 ](
     create=MovieGenreCreateEvent,
     update=MovieGenreUpdateEvent,
-    delete=Id
+    delete=MovieGenreDeleteEvent
 )

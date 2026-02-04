@@ -56,12 +56,18 @@ class MovieShotUpdateEvent(MovieShotUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class MovieShotDeleteEvent(Id):
+    movie_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 movie_shot_event_schemas = EventSchemas[
     MovieShotCreateEvent,
     MovieShotUpdateEvent,
-    Id
+    MovieShotDeleteEvent,
 ](
     create=MovieShotCreateEvent,
     update=MovieShotUpdateEvent,
-    delete=Id
+    delete=MovieShotDeleteEvent,
 )

@@ -3,13 +3,12 @@ from sqlalchemy.exc import IntegrityError
 from core.models import MovieCountryAssociation, MovieGenreAssociation, MoviePersonAssociation
 from exceptions.db import UniqueException, RelatedObjectNotFoundException
 from repositories.signals import SignalRepositoryBase
-from schemas.base import Id
 from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCreateEvent, \
-    MovieCountryUpdateEvent, movie_country_event_schemas
+    MovieCountryUpdateEvent, movie_country_event_schemas, MovieCountryDeleteEvent
 from schemas.movie_genre import MovieGenreCreate, MovieGenreUpdate, MovieGenreCreateEvent, \
-    MovieGenreUpdateEvent, movie_genre_event_schemas
+    MovieGenreUpdateEvent, movie_genre_event_schemas, MovieGenreDeleteEvent
 from schemas.movie_person import MoviePersonUpdateDB, MoviePersonCreate, MoviePersonCreateEvent, \
-    MoviePersonUpdateEvent, movie_person_event_schemas
+    MoviePersonUpdateEvent, movie_person_event_schemas, MoviePersonDeleteEvent
 from signals.base import Eventer
 from signals.event_session import EventSession
 from signals.movie_country import movie_country_base_publishers
@@ -25,7 +24,7 @@ class MovieCountryRepository(
         MovieCountryUpdate,
         MovieCountryCreateEvent,
         MovieCountryUpdateEvent,
-        Id,
+        MovieCountryDeleteEvent,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
@@ -66,7 +65,7 @@ class MovieGenreRepository(
         MovieGenreUpdate,
         MovieGenreCreateEvent,
         MovieGenreUpdateEvent,
-        Id,
+        MovieGenreDeleteEvent,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
@@ -107,7 +106,7 @@ class MoviePersonRepository(
         MoviePersonUpdateDB,
         MoviePersonCreateEvent,
         MoviePersonUpdateEvent,
-        Id,
+        MoviePersonDeleteEvent,
     ]
 ):
     def __init__(self, session: EventSession) -> None:
