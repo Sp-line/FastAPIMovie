@@ -4,7 +4,7 @@ from schemas.cache import ModelCacheConfig
 
 
 class CacheInvalidatorBase[
-    TModelCacheConfig: ModelCacheConfig
+TModelCacheConfig: ModelCacheConfig
 ]:
     def __init__(
             self,
@@ -16,18 +16,19 @@ class CacheInvalidatorBase[
         self._model_cache = model_cache_config
         self._table_name = table_name
 
-    async def invalidate_list_cache(self) -> None:
+    async def _invalidate_list_cache_butch(self, match: str) -> None:
         keys = []
-        async for key in self._cache.scan_iter(match=f"{self._table_name}:list*"):
+        async for key in self._cache.scan_iter(match=match):
             keys.append(key)
         if keys:
             await self._cache.delete(*keys)
 
-    async def invalidate_retrieve_cache(self, obj_id: int) -> None:
-        key = self._model_cache.retrieve_key.format(
+    async def invalidate_list_cache(self) -> None:
+        await self._invalidate_list_cache_butch(f"{self._table_name}:list*")
+
+    async def invalidate_retrieve_cache(self, *ids: int) -> None:
+        keys = [self._model_cache.retrieve_key.format(
             table_name=self._table_name,
             obj_id=obj_id,
-        )
-        await self._cache.delete(key)
-
-
+        ) for obj_id in ids]
+        await self._cache.delete(*keys)
