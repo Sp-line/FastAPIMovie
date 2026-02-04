@@ -1,17 +1,17 @@
+import orjson
+from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from exceptions.db import ObjectNotFoundException
 from repositories.movie import MovieRepository
 from repositories.signals import SignalUnitOfWork
-from schemas.cache import ModelCacheConfig
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
-    MovieDetail
+    MovieDetail, MovieCacheConfig
 from services.cache import CacheServiceABC
 from services.file import FileService
 from services.s3 import S3Service
 from storage.path_builder import SlugFilePathBuilder
 from storage.url_resolver import FileUrlResolver
-from redis.asyncio.client import Redis as AsyncRedis
 
 
 class MovieService(
@@ -22,7 +22,7 @@ class MovieService(
         MovieUpdateReq,
         MovieCreateDB,
         MovieUpdateDB,
-        ModelCacheConfig
+        MovieCacheConfig
     ]
 ):
     def __init__(
@@ -37,7 +37,7 @@ class MovieService(
             table_name="movies",
             read_schema_type=MovieRead,
             cache=cache,
-            cache_model_config=ModelCacheConfig()
+            cache_model_config=MovieCacheConfig()
         )
 
     @staticmethod
@@ -52,13 +52,55 @@ class MovieService(
         )
 
     async def get_for_list(self, skip: int = 0, limit: int = 100) -> list[MovieList]:
-        items = await self._repository.get_for_list(skip, limit)
-        return [MovieList.model_validate(movie) for movie in items]
+        key = self._cache_model_config.list_summary_key.format(
+            table_name=self._table_name,
+            skip=skip,
+            limit=limit
+        )
 
-    async def get_for_detail(self, movie_id: int) -> MovieDetail:
-        if not (movie := await self._repository.get_for_detail(movie_id)):
-            raise ObjectNotFoundException(movie_id, self._table_name)
-        return MovieDetail.model_validate(movie)
+        if (cached := await self._cache.get(key)) is not None:
+            return [MovieList.model_validate(obj) for obj in orjson.loads(cached)]
+
+        objs = [MovieList.model_validate(obj) for obj in await self._repository.get_for_list(skip, limit)]
+
+        data_to_cache = orjson.dumps(
+            [obj.model_dump() for obj in objs]
+        )
+
+        await self._cache.set(
+            key,
+            data_to_cache,
+            self._cache_model_config.list_summary_ttl
+        )
+
+        return objs
+
+    async def get_for_detail(self, obj_id: int) -> MovieDetail:
+        key = self._cache_model_config.detail_key.format(
+            table_name=self._table_name,
+            obj_id=obj_id
+        )
+
+        if (cached := await self._cache.get(key)) is not None:
+            return MovieDetail.model_validate(orjson.loads(cached))
+
+        if db_obj := await self._repository.get_for_detail(obj_id):
+            obj = MovieDetail.model_validate(db_obj)
+        else:
+            raise ObjectNotFoundException(
+                obj_id=obj_id,
+                table_name=self._table_name
+            )
+
+        data_to_cache = orjson.dumps(obj.model_dump())
+
+        await self._cache.set(
+            key,
+            data_to_cache,
+            self._cache_model_config.detail_ttl
+        )
+
+        return obj
 
 
 class MovieFileService(FileService[MovieRead, MovieUpdateDB]):
