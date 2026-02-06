@@ -44,6 +44,14 @@ class CountryUpdateEvent(CountryUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class CountrySearchRead(CountryRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CountryElasticSchema(CountryRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
 country_event_schemas = EventSchemas[
     CountryCreateEvent,
     CountryUpdateEvent,
