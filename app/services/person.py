@@ -1,13 +1,16 @@
+from elasticsearch import AsyncElasticsearch
 from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.person import PersonRepository
 from repositories.signals import SignalUnitOfWork
 from schemas.cache import ModelCacheConfig
-from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq
+from schemas.person import PersonRead, PersonCreateDB, PersonUpdateDB, PersonCreateReq, PersonUpdateReq, \
+    PersonSearchRead
 from services.cache import CacheServiceABC
 from services.file import FileService
 from services.s3 import S3Service
+from services.search import SearchServiceBase
 from storage.path_builder import SlugFilePathBuilder
 from storage.url_resolver import FileUrlResolver
 
@@ -67,4 +70,14 @@ class PersonFileService(FileService[PersonRead, PersonUpdateDB]):
             update_schema_type=PersonUpdateDB,
             url_resolver=FileUrlResolver(),
             path_builder=SlugFilePathBuilder[PersonRead](folder="persons/photos", field="slug"),
+        )
+
+
+class PersonSearchService(SearchServiceBase[PersonSearchRead]):
+    def __init__(self, client: AsyncElasticsearch) -> None:
+        super().__init__(
+            client,
+            PersonSearchRead,
+            "persons",
+            ["full_name", ]
         )

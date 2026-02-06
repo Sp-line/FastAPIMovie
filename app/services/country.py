@@ -1,11 +1,14 @@
+from elasticsearch import AsyncElasticsearch
 from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
 from repositories.country import CountryRepository
 from repositories.signals import SignalUnitOfWork
 from schemas.cache import ModelCacheConfig
-from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq
+from schemas.country import CountryRead, CountryUpdateDB, CountryCreateDB, CountryUpdateReq, CountryCreateReq, \
+    CountrySearchRead
 from services.cache import CacheServiceABC
+from services.search import SearchServiceBase
 
 
 class CountryService(
@@ -44,3 +47,13 @@ class CountryService(
     @staticmethod
     def _prepare_update_data(data: CountryUpdateReq) -> CountryUpdateDB:
         return CountryUpdateDB(**data.model_dump(exclude_unset=True))
+
+
+class CountrySearchService(SearchServiceBase[CountrySearchRead]):
+    def __init__(self, client: AsyncElasticsearch) -> None:
+        super().__init__(
+            client,
+            CountrySearchRead,
+            "countries",
+            ["name", ]
+        )

@@ -1,4 +1,5 @@
 import orjson
+from elasticsearch import AsyncElasticsearch
 from redis.asyncio.client import Redis as AsyncRedis
 from slugify import slugify
 
@@ -6,10 +7,11 @@ from exceptions.db import ObjectNotFoundException
 from repositories.movie import MovieRepository
 from repositories.signals import SignalUnitOfWork
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
-    MovieDetail, MovieCacheConfig
+    MovieDetail, MovieCacheConfig, MovieSearchRead
 from services.cache import CacheServiceABC
 from services.file import FileService
 from services.s3 import S3Service
+from services.search import SearchServiceBase
 from storage.path_builder import SlugFilePathBuilder
 from storage.url_resolver import FileUrlResolver
 
@@ -120,4 +122,14 @@ class MovieFileService(FileService[MovieRead, MovieUpdateDB]):
             update_schema_type=MovieUpdateDB,
             url_resolver=FileUrlResolver(),
             path_builder=SlugFilePathBuilder[MovieRead](folder="movies/posters", field="slug"),
+        )
+
+
+class MovieSearchService(SearchServiceBase[MovieSearchRead]):
+    def __init__(self, client: AsyncElasticsearch) -> None:
+        super().__init__(
+            client,
+            MovieSearchRead,
+            "movies",
+            ["title^3", "description", ]
         )
