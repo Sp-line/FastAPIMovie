@@ -1,9 +1,19 @@
 from fastapi import APIRouter
 
-from dependencies.services import GenreServiceDep
-from schemas.genre import GenreRead, GenreUpdateReq, GenreCreateReq
+from dependencies.services import GenreServiceDep, GenreSearchServiceDep
+from schemas.genre import GenreRead, GenreUpdateReq, GenreCreateReq, GenreSearchRead
 
 router = APIRouter()
+
+
+@router.get("/search")
+async def search_genre(
+        service: GenreSearchServiceDep,
+        query: str,
+        skip: int = 0,
+        limit: int = 10
+) -> list[GenreSearchRead]:
+    return await service.search(query, skip, limit)
 
 
 @router.get("/")

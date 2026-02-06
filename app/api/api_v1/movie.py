@@ -1,9 +1,19 @@
 from fastapi import APIRouter, UploadFile
 
-from dependencies.services import MovieServiceDep, MovieFileServiceDep
-from schemas.movie import MovieList, MovieRead, MovieCreateReq, MovieUpdateReq, MovieDetail
+from dependencies.services import MovieServiceDep, MovieFileServiceDep, MovieSearchServiceDep
+from schemas.movie import MovieList, MovieRead, MovieCreateReq, MovieUpdateReq, MovieDetail, MovieSearchRead
 
 router = APIRouter()
+
+
+@router.get("/search")
+async def search_movie(
+        service: MovieSearchServiceDep,
+        query: str,
+        skip: int = 0,
+        limit: int = 10
+) -> list[MovieSearchRead]:
+    return await service.search(query, skip, limit)
 
 
 @router.get("/")

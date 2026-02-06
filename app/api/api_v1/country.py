@@ -1,9 +1,19 @@
 from fastapi import APIRouter
 
-from dependencies.services import CountryServiceDep
-from schemas.country import CountryRead, CountryCreateReq, CountryUpdateReq
+from dependencies.services import CountryServiceDep, CountrySearchServiceDep
+from schemas.country import CountryRead, CountryCreateReq, CountryUpdateReq, CountrySearchRead
 
 router = APIRouter()
+
+
+@router.get("/search")
+async def search_country(
+        service: CountrySearchServiceDep,
+        query: str,
+        skip: int = 0,
+        limit: int = 10
+) -> list[CountrySearchRead]:
+    return await service.search(query, skip, limit)
 
 
 @router.get("/")

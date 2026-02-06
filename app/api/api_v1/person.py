@@ -1,9 +1,19 @@
 from fastapi import APIRouter, UploadFile
 
-from dependencies.services import PersonServiceDep, PersonFileServiceDep
-from schemas.person import PersonUpdateReq, PersonCreateReq, PersonRead
+from dependencies.services import PersonServiceDep, PersonFileServiceDep, PersonSearchServiceDep
+from schemas.person import PersonUpdateReq, PersonCreateReq, PersonRead, PersonSearchRead
 
 router = APIRouter()
+
+
+@router.get("/search")
+async def search_person(
+        service: PersonSearchServiceDep,
+        query: str,
+        skip: int = 0,
+        limit: int = 10
+) -> list[PersonSearchRead]:
+    return await service.search(query, skip, limit)
 
 
 @router.get("/")
