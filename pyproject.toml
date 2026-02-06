@@ -24,6 +24,7 @@ types-aioboto3 = "==15.5.0"
 faststream = {extras = ["nats"], version = "^0.6.5"}
 python-multipart = "^0.0.22"
 redis = "^7.1.0"
+elasticsearch = "^9.3.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
