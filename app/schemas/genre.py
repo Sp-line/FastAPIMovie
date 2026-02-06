@@ -44,6 +44,14 @@ class GenreUpdateEvent(GenreUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GenreSearchRead(GenreRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GenreElasticSchema(GenreRead):
+    model_config = ConfigDict(from_attributes=True)
+
+
 genre_event_schemas = EventSchemas[
     GenreCreateEvent,
     GenreUpdateEvent,
