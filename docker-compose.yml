@@ -66,3 +66,23 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.2.1
+    env_file:
+      - app/.env
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
