@@ -46,6 +46,20 @@ class PersonUpdateEvent(PersonUpdateDB, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PersonSearchRead(Id):
+    full_name: str
+    slug: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PersonElasticSchema(Id):
+    full_name: str
+    slug: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 person_event_schemas = EventSchemas[
     PersonCreateEvent,
     PersonUpdateEvent,
