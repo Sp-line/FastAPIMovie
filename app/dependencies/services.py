@@ -4,17 +4,18 @@ from fastapi import Depends
 
 from dependencies.cache import RedisDep
 from dependencies.db import SignalUnitOfWorkDep
+from dependencies.elastic import AsyncElasticDep
 from dependencies.repositories import MovieRepositoryDep, \
     MovieCountryRepositoryDep, \
     MovieGenreRepositoryDep, \
     MoviePersonRepositoryDep, PersonRepositoryDep, MovieShotRepositoryDep, CountryRepositoryDep, GenreRepositoryDep
 from dependencies.s3 import S3ServiceDep
-from services.country import CountryService
-from services.genre import GenreService
+from services.country import CountryService, CountrySearchService
+from services.genre import GenreService, GenreSearchService
 from services.m2m import MovieCountryService, MovieGenreService, MoviePersonService
-from services.movie import MovieService, MovieFileService
+from services.movie import MovieService, MovieFileService, MovieSearchService
 from services.movie_shot import MovieShotService, MovieShotFileService
-from services.person import PersonService, PersonFileService
+from services.person import PersonService, PersonFileService, PersonSearchService
 
 
 def get_movie_service(
@@ -102,6 +103,22 @@ def get_genre_service(
     return GenreService(repository, uow, cache)
 
 
+def get_country_search_service(elasticsearch: AsyncElasticDep) -> CountrySearchService:
+    return CountrySearchService(elasticsearch)
+
+
+def get_person_search_service(elasticsearch: AsyncElasticDep) -> PersonSearchService:
+    return PersonSearchService(elasticsearch)
+
+
+def get_genre_search_service(elasticsearch: AsyncElasticDep) -> GenreSearchService:
+    return GenreSearchService(elasticsearch)
+
+
+def get_movie_search_service(elasticsearch: AsyncElasticDep) -> MovieSearchService:
+    return MovieSearchService(elasticsearch)
+
+
 MovieServiceDep: TypeAlias = Annotated[MovieService, Depends(get_movie_service)]
 MovieFileServiceDep: TypeAlias = Annotated[MovieFileService, Depends(get_movie_file_service)]
 
@@ -116,3 +133,8 @@ PersonServiceDep: TypeAlias = Annotated[PersonService, Depends(get_person_servic
 PersonFileServiceDep: TypeAlias = Annotated[PersonFileService, Depends(get_person_file_service)]
 CountryServiceDep: TypeAlias = Annotated[CountryService, Depends(get_country_service)]
 GenreServiceDep: TypeAlias = Annotated[GenreService, Depends(get_genre_service)]
+
+CountrySearchServiceDep: TypeAlias = Annotated[CountrySearchService, Depends(get_country_search_service)]
+PersonSearchServiceDep: TypeAlias = Annotated[PersonSearchService, Depends(get_person_search_service)]
+GenreSearchServiceDep: TypeAlias = Annotated[GenreSearchService, Depends(get_genre_search_service)]
+MovieSearchServiceDep: TypeAlias = Annotated[MovieSearchService, Depends(get_movie_search_service)]
