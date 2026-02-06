@@ -97,6 +97,13 @@ class MovieCacheConfig(ModelCacheConfig):
     detail_ttl: int = 14400
 
 
+class MovieSearchRead(Id):
+    title: str
+    slug: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 movie_event_schemas = EventSchemas[
     MovieCreateEvent,
     MovieUpdateEvent,
