@@ -7,9 +7,10 @@ from exceptions.db import ObjectNotFoundException
 from repositories.movie import MovieRepository
 from repositories.signals import SignalUnitOfWork
 from schemas.movie import MovieRead, MovieList, MovieCreateReq, MovieCreateDB, MovieUpdateDB, MovieUpdateReq, \
-    MovieDetail, MovieCacheConfig, MovieSearchRead
+    MovieDetail, MovieCacheConfig, MovieSearchRead, MovieFilterRegistry, MovieFilter
 from services.cache import CacheServiceABC
 from services.file import FileService
+from services.filter import FilterService
 from services.s3 import S3Service
 from services.search import SearchServiceBase
 from storage.path_builder import SlugFilePathBuilder
@@ -132,4 +133,20 @@ class MovieSearchService(SearchServiceBase[MovieSearchRead]):
             MovieSearchRead,
             "movies",
             ["title^3", "description", ]
+        )
+
+
+class MovieFilterService(
+    FilterService[
+        MovieFilterRegistry,
+        MovieFilter,
+        MovieRead
+    ]
+):
+    def __init__(self, client: AsyncElasticsearch) -> None:
+        super().__init__(
+            client,
+            MovieFilterRegistry(),
+            MovieRead,
+            "movies",
         )
