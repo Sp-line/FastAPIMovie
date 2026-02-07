@@ -1,7 +1,10 @@
-from fastapi import APIRouter, UploadFile
+from typing import Annotated
 
-from dependencies.services import MovieServiceDep, MovieFileServiceDep, MovieSearchServiceDep
-from schemas.movie import MovieList, MovieRead, MovieCreateReq, MovieUpdateReq, MovieDetail, MovieSearchRead
+from fastapi import APIRouter, UploadFile, Query
+
+from dependencies.services import MovieServiceDep, MovieFileServiceDep, MovieSearchServiceDep, MovieFilterServiceDep
+from schemas.movie import MovieList, MovieRead, MovieCreateReq, MovieUpdateReq, MovieDetail, MovieSearchRead, \
+    MovieFilter
 
 router = APIRouter()
 
@@ -14,6 +17,14 @@ async def search_movie(
         limit: int = 10
 ) -> list[MovieSearchRead]:
     return await service.search(query, skip, limit)
+
+
+@router.get("/filter")
+async def filter_movies(
+        service: MovieFilterServiceDep,
+        filters: Annotated[MovieFilter, Query()]
+) -> list[MovieRead]:
+    return await service.get(filters)
 
 
 @router.get("/")
