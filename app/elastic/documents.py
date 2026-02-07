@@ -1,11 +1,6 @@
 from datetime import datetime
 
-from elasticsearch.dsl import AsyncDocument, Integer, Text, Keyword, InnerDoc, Nested, M, mapped_field, Date
-
-
-class PersonRole(InnerDoc):
-    person_id: M[int] = mapped_field(Integer())
-    role: M[str] = mapped_field(Keyword())
+from elasticsearch.dsl import AsyncDocument, Integer, Text, Keyword, M, mapped_field, Date
 
 
 class Movie(AsyncDocument):
@@ -21,7 +16,7 @@ class Movie(AsyncDocument):
 
     genre_ids: M[list[int]] = mapped_field(Keyword())
     country_ids: M[list[int]] = mapped_field(Keyword())
-    persons: M[list[PersonRole]] = mapped_field(Nested(PersonRole))
+    person_ids: M[list[int]] = mapped_field(Keyword())
 
     class Index:
         name = "movies"
