@@ -13,7 +13,7 @@ from dependencies.s3 import S3ServiceDep
 from services.country import CountryService, CountrySearchService
 from services.genre import GenreService, GenreSearchService
 from services.m2m import MovieCountryService, MovieGenreService, MoviePersonService
-from services.movie import MovieService, MovieFileService, MovieSearchService
+from services.movie import MovieService, MovieFileService, MovieSearchService, MovieFilterService
 from services.movie_shot import MovieShotService, MovieShotFileService
 from services.person import PersonService, PersonFileService, PersonSearchService
 
@@ -119,6 +119,10 @@ def get_movie_search_service(elasticsearch: AsyncElasticDep) -> MovieSearchServi
     return MovieSearchService(elasticsearch)
 
 
+def get_movie_filter_service(elasticsearch: AsyncElasticDep) -> MovieFilterService:
+    return MovieFilterService(elasticsearch)
+
+
 MovieServiceDep: TypeAlias = Annotated[MovieService, Depends(get_movie_service)]
 MovieFileServiceDep: TypeAlias = Annotated[MovieFileService, Depends(get_movie_file_service)]
 
@@ -138,3 +142,5 @@ CountrySearchServiceDep: TypeAlias = Annotated[CountrySearchService, Depends(get
 PersonSearchServiceDep: TypeAlias = Annotated[PersonSearchService, Depends(get_person_search_service)]
 GenreSearchServiceDep: TypeAlias = Annotated[GenreSearchService, Depends(get_genre_search_service)]
 MovieSearchServiceDep: TypeAlias = Annotated[MovieSearchService, Depends(get_movie_search_service)]
+
+MovieFilterServiceDep: TypeAlias = Annotated[MovieFilterService, Depends(get_movie_filter_service)]
