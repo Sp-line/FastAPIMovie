@@ -4,7 +4,9 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import MovieLimits, ImageUrlLimits
-from schemas.base import Id
+from filters.base import RangeFilter, TermFilter, FilterStrategy, WeightedTermFilter
+from filters.types import RangeOperator
+from schemas.base import Id, Pagination
 from schemas.cache import ModelCacheConfig
 from schemas.country import CountryRead
 from schemas.event import EventSchemas
@@ -95,6 +97,30 @@ class MovieCacheConfig(ModelCacheConfig):
     list_summary_ttl: int = 14400
     detail_key: str = "{table_name}:detail:id={obj_id}"
     detail_ttl: int = 14400
+
+
+class MovieFilter(Pagination):
+    duration_gte: Annotated[int | None, Field(ge=MovieLimits.DURATION_MIN)] = None
+    duration_lte: Annotated[int | None, Field(le=MovieLimits.DURATION_MAX)] = None
+    release_year_gte: Annotated[int | None, Field(ge=MovieLimits.RELEASE_YEAR_MIN)] = None
+    release_year_lte: int | None = None
+    age_rating: str | None = None
+    genre_ids: list[int] | None = None
+    country_ids: list[int] | None = None
+    person_ids: list[int] | None = None
+
+
+class MovieFilterRegistry(BaseModel):
+    duration_gte: FilterStrategy = RangeFilter("duration", RangeOperator.GTE)
+    duration_lte: FilterStrategy = RangeFilter("duration", RangeOperator.LTE)
+    release_year_gte: FilterStrategy = RangeFilter("release_year", RangeOperator.GTE)
+    release_year_lte: FilterStrategy = RangeFilter("release_year", RangeOperator.LTE)
+    age_rating: FilterStrategy = TermFilter("age_rating")
+    genre_ids: FilterStrategy = WeightedTermFilter("genre_ids")
+    country_ids: FilterStrategy = WeightedTermFilter("country_ids")
+    person_ids: FilterStrategy = WeightedTermFilter("person_ids")
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class MovieSearchRead(Id):
