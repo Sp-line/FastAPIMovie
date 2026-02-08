@@ -28,6 +28,7 @@ class PersonUpdateBase(BaseModel):
 
 class PersonUpdateDB(PersonUpdateBase):
     photo_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
+    slug: Annotated[str | None, Field(min_length=PersonLimits.SLUG_MIN, max_length=PersonLimits.SLUG_MAX)] = None
 
 
 class PersonUpdateReq(PersonUpdateBase):
