@@ -4,7 +4,7 @@ from schemas.cache import ModelCacheConfig
 
 
 class CacheInvalidatorBase[
-TModelCacheConfig: ModelCacheConfig
+    TModelCacheConfig: ModelCacheConfig
 ]:
     def __init__(
             self,
