@@ -1,15 +1,15 @@
 from fastapi import APIRouter
+from dishka.integrations.fastapi import FromDishka, DishkaRoute
+from schemas.movie_country import MovieCountryRead, MovieCountryCreate
+from services.m2m import MovieCountryService
 
-from dependencies.services import MovieCountryServiceDep
-from schemas.movie_country import MovieCountryRead, MovieCountryCreate, MovieCountryUpdate
-
-router = APIRouter()
+router = APIRouter(route_class=DishkaRoute)
 
 
 @router.post("/")
 async def create_movie_country_association(
         data: MovieCountryCreate,
-        service: MovieCountryServiceDep
+        service: FromDishka[MovieCountryService]
 ) -> MovieCountryRead:
     return await service.create(data)
 
@@ -17,7 +17,7 @@ async def create_movie_country_association(
 @router.post("/bulk")
 async def bulk_create_movie_country_associations(
         data: list[MovieCountryCreate],
-        service: MovieCountryServiceDep
+        service: FromDishka[MovieCountryService]
 ) -> list[MovieCountryRead]:
     return await service.bulk_create(data)
 
@@ -25,6 +25,6 @@ async def bulk_create_movie_country_associations(
 @router.delete("/{movie_country_association_id}")
 async def delete_movie_country_association(
         movie_country_association_id: int,
-        service: MovieCountryServiceDep
+        service: FromDishka[MovieCountryService]
 ) -> None:
     return await service.delete(movie_country_association_id)

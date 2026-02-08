@@ -1,146 +1,81 @@
-from typing import Annotated, TypeAlias
+from dishka import Scope, provide, Provider
+from redis.asyncio.client import Redis
+from types_aiobotocore_s3 import S3Client
 
-from fastapi import Depends
-
-from dependencies.cache import RedisDep
-from dependencies.db import SignalUnitOfWorkDep
-from dependencies.elastic import AsyncElasticDep
-from dependencies.repositories import MovieRepositoryDep, \
-    MovieCountryRepositoryDep, \
-    MovieGenreRepositoryDep, \
-    MoviePersonRepositoryDep, PersonRepositoryDep, MovieShotRepositoryDep, CountryRepositoryDep, GenreRepositoryDep
-from dependencies.s3 import S3ServiceDep
+from cache import CountryCacheInvalidator, GenreCacheInvalidator, PersonCacheInvalidator, MoviePersonCacheInvalidator
+from cache.invalidator import CacheInvalidatorBase
+from cache.movie import MovieCacheInvalidator
+from core.config import settings
+from elastic.country import CountryElasticSyncer
+from elastic.genre import GenreElasticSyncer
+from elastic.person import PersonElasticSyncer
+from schemas.cache import ModelCacheConfig
 from services.country import CountryService, CountrySearchService
 from services.genre import GenreService, GenreSearchService
 from services.m2m import MovieCountryService, MovieGenreService, MoviePersonService
 from services.movie import MovieService, MovieFileService, MovieSearchService, MovieFilterService
 from services.movie_shot import MovieShotService, MovieShotFileService
 from services.person import PersonService, PersonFileService, PersonSearchService
+from services.s3 import S3Service
 
 
-def get_movie_service(
-        repository: MovieRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        cache: RedisDep
-) -> MovieService:
-    return MovieService(repository, uow, cache)
+class ServiceProvider(Provider):
+    scope = Scope.REQUEST
 
+    @provide
+    def get_s3_service(self, client: S3Client) -> S3Service:
+        return S3Service(client=client, bucket_name=settings.s3.bucket_name)
 
-def get_movie_country_service(
-        repository: MovieCountryRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-) -> MovieCountryService:
-    return MovieCountryService(repository, uow)
+    @provide
+    def get_movie_cache_invalidator(self, cache: Redis) -> MovieCacheInvalidator:
+        return MovieCacheInvalidator(cache)
 
+    @provide
+    def get_country_invalidator(self, cache: Redis) -> CountryCacheInvalidator:
+        return CountryCacheInvalidator(
+            CacheInvalidatorBase(cache, ModelCacheConfig(), "countries")
+        )
 
-def get_movie_genre_service(
-        repository: MovieGenreRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-) -> MovieGenreService:
-    return MovieGenreService(repository, uow)
+    @provide
+    def get_genre_invalidator(self, cache: Redis) -> GenreCacheInvalidator:
+        return GenreCacheInvalidator(
+            CacheInvalidatorBase(cache, ModelCacheConfig(), "genres")
+        )
 
+    @provide
+    def get_person_invalidator(self, cache: Redis) -> PersonCacheInvalidator:
+        return PersonCacheInvalidator(
+            CacheInvalidatorBase(cache, ModelCacheConfig(), "persons")
+        )
 
-def get_movie_person_service(
-        repository: MoviePersonRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        cache: RedisDep
-) -> MoviePersonService:
-    return MoviePersonService(repository, uow, cache)
+    @provide
+    def get_movie_person_invalidator(self, cache: Redis) -> MoviePersonCacheInvalidator:
+        return MoviePersonCacheInvalidator(
+            CacheInvalidatorBase(cache, ModelCacheConfig(), "movie_person_associations")
+        )
 
+    get_country_syncer = provide(CountryElasticSyncer)
+    get_genre_syncer = provide(GenreElasticSyncer)
+    get_person_syncer = provide(PersonElasticSyncer)
 
-def get_movie_file_service(
-        repository: MovieRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        s3: S3ServiceDep,
-) -> MovieFileService:
-    return MovieFileService(s3, repository, uow)
+    get_movie_service = provide(MovieService)
+    get_movie_file_service = provide(MovieFileService)
+    get_movie_search_service = provide(MovieSearchService)
+    get_movie_filter_service = provide(MovieFilterService)
 
+    get_person_service = provide(PersonService)
+    get_person_file_service = provide(PersonFileService)
+    get_person_search_service = provide(PersonSearchService)
 
-def get_person_service(
-        repository: PersonRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        cache: RedisDep
-) -> PersonService:
-    return PersonService(repository, uow, cache)
+    get_genre_service = provide(GenreService)
+    get_genre_search_service = provide(GenreSearchService)
 
+    get_country_service = provide(CountryService)
+    get_country_search_service = provide(CountrySearchService)
 
-def get_person_file_service(
-        repository: PersonRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        s3: S3ServiceDep,
-) -> PersonFileService:
-    return PersonFileService(s3, repository, uow)
+    get_movie_shot_service = provide(MovieShotService)
+    get_movie_shot_file_service = provide(MovieShotFileService)
 
-
-def get_movie_shot_service(
-        repository: MovieShotRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-) -> MovieShotService:
-    return MovieShotService(repository, uow)
-
-
-def get_movie_shot_file_service(
-        repository: MovieShotRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        s3: S3ServiceDep,
-) -> MovieShotFileService:
-    return MovieShotFileService(s3, repository, uow)
-
-
-def get_country_service(
-        repository: CountryRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        cache: RedisDep
-) -> CountryService:
-    return CountryService(repository, uow, cache)
-
-
-def get_genre_service(
-        repository: GenreRepositoryDep,
-        uow: SignalUnitOfWorkDep,
-        cache: RedisDep,
-) -> GenreService:
-    return GenreService(repository, uow, cache)
-
-
-def get_country_search_service(elasticsearch: AsyncElasticDep) -> CountrySearchService:
-    return CountrySearchService(elasticsearch)
-
-
-def get_person_search_service(elasticsearch: AsyncElasticDep) -> PersonSearchService:
-    return PersonSearchService(elasticsearch)
-
-
-def get_genre_search_service(elasticsearch: AsyncElasticDep) -> GenreSearchService:
-    return GenreSearchService(elasticsearch)
-
-
-def get_movie_search_service(elasticsearch: AsyncElasticDep) -> MovieSearchService:
-    return MovieSearchService(elasticsearch)
-
-
-def get_movie_filter_service(elasticsearch: AsyncElasticDep) -> MovieFilterService:
-    return MovieFilterService(elasticsearch)
-
-
-MovieServiceDep: TypeAlias = Annotated[MovieService, Depends(get_movie_service)]
-MovieFileServiceDep: TypeAlias = Annotated[MovieFileService, Depends(get_movie_file_service)]
-
-MovieShotServiceDep: TypeAlias = Annotated[MovieShotService, Depends(get_movie_shot_service)]
-MovieShotFileServiceDep: TypeAlias = Annotated[MovieShotFileService, Depends(get_movie_shot_file_service)]
-
-MovieCountryServiceDep: TypeAlias = Annotated[MovieCountryService, Depends(get_movie_country_service)]
-MovieGenreServiceDep: TypeAlias = Annotated[MovieGenreService, Depends(get_movie_genre_service)]
-MoviePersonServiceDep: TypeAlias = Annotated[MoviePersonService, Depends(get_movie_person_service)]
-
-PersonServiceDep: TypeAlias = Annotated[PersonService, Depends(get_person_service)]
-PersonFileServiceDep: TypeAlias = Annotated[PersonFileService, Depends(get_person_file_service)]
-CountryServiceDep: TypeAlias = Annotated[CountryService, Depends(get_country_service)]
-GenreServiceDep: TypeAlias = Annotated[GenreService, Depends(get_genre_service)]
-
-CountrySearchServiceDep: TypeAlias = Annotated[CountrySearchService, Depends(get_country_search_service)]
-PersonSearchServiceDep: TypeAlias = Annotated[PersonSearchService, Depends(get_person_search_service)]
-GenreSearchServiceDep: TypeAlias = Annotated[GenreSearchService, Depends(get_genre_search_service)]
-MovieSearchServiceDep: TypeAlias = Annotated[MovieSearchService, Depends(get_movie_search_service)]
-
-MovieFilterServiceDep: TypeAlias = Annotated[MovieFilterService, Depends(get_movie_filter_service)]
+    get_movie_country_service = provide(MovieCountryService)
+    get_movie_genre_service = provide(MovieGenreService)
+    get_movie_person_service = provide(MoviePersonService)

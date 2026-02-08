@@ -1,14 +1,14 @@
 from fastapi import APIRouter
-
-from dependencies.services import MoviePersonServiceDep
+from dishka.integrations.fastapi import FromDishka, DishkaRoute
 from schemas.movie_person import MoviePersonRead, MoviePersonUpdateReq, MoviePersonCreate
+from services.m2m import MoviePersonService
 
-router = APIRouter()
+router = APIRouter(route_class=DishkaRoute)
 
 
 @router.get("/")
 async def get_movie_person_associations(
-        service: MoviePersonServiceDep,
+        service: FromDishka[MoviePersonService],
         skip: int = 0,
         limit: int = 100
 ) -> list[MoviePersonRead]:
@@ -18,7 +18,7 @@ async def get_movie_person_associations(
 @router.get("/{movie_person_association_id}")
 async def get_movie_person_association(
         movie_person_association_id: int,
-        service: MoviePersonServiceDep
+        service: FromDishka[MoviePersonService]
 ) -> MoviePersonRead:
     return await service.get_by_id(movie_person_association_id)
 
@@ -26,7 +26,7 @@ async def get_movie_person_association(
 @router.post("/")
 async def create_movie_person_association(
         data: MoviePersonCreate,
-        service: MoviePersonServiceDep
+        service: FromDishka[MoviePersonService]
 ) -> MoviePersonRead:
     return await service.create(data)
 
@@ -34,7 +34,7 @@ async def create_movie_person_association(
 @router.post("/bulk")
 async def bulk_create_movie_person_associations(
         data: list[MoviePersonCreate],
-        service: MoviePersonServiceDep
+        service: FromDishka[MoviePersonService]
 ) -> list[MoviePersonRead]:
     return await service.bulk_create(data)
 
@@ -43,7 +43,7 @@ async def bulk_create_movie_person_associations(
 async def update_movie_person_association(
         movie_person_association_id: int,
         data: MoviePersonUpdateReq,
-        service: MoviePersonServiceDep
+        service: FromDishka[MoviePersonService]
 ) -> MoviePersonRead:
     return await service.update(movie_person_association_id, data)
 
@@ -51,6 +51,6 @@ async def update_movie_person_association(
 @router.delete("/{movie_person_association_id}")
 async def delete_movie_person_association(
         movie_person_association_id: int,
-        service: MoviePersonServiceDep
+        service: FromDishka[MoviePersonService]
 ) -> None:
     return await service.delete(movie_person_association_id)

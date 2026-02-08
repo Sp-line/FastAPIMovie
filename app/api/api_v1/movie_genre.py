@@ -1,15 +1,15 @@
 from fastapi import APIRouter
+from dishka.integrations.fastapi import FromDishka, DishkaRoute
+from schemas.movie_genre import MovieGenreRead, MovieGenreCreate
+from services.m2m import MovieGenreService
 
-from dependencies.services import MovieGenreServiceDep
-from schemas.movie_genre import MovieGenreRead, MovieGenreCreate, MovieGenreUpdate
-
-router = APIRouter()
+router = APIRouter(route_class=DishkaRoute)
 
 
 @router.post("/")
 async def create_movie_genre_association(
         data: MovieGenreCreate,
-        service: MovieGenreServiceDep
+        service: FromDishka[MovieGenreService]
 ) -> MovieGenreRead:
     return await service.create(data)
 
@@ -17,7 +17,7 @@ async def create_movie_genre_association(
 @router.post("/bulk")
 async def bulk_create_movie_genre_associations(
         data: list[MovieGenreCreate],
-        service: MovieGenreServiceDep
+        service: FromDishka[MovieGenreService]
 ) -> list[MovieGenreRead]:
     return await service.bulk_create(data)
 
@@ -25,6 +25,6 @@ async def bulk_create_movie_genre_associations(
 @router.delete("/{movie_genre_association_id}")
 async def delete_movie_genre_association(
         movie_genre_association_id: int,
-        service: MovieGenreServiceDep
+        service: FromDishka[MovieGenreService]
 ) -> None:
     return await service.delete(movie_genre_association_id)

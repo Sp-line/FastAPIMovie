@@ -16,14 +16,14 @@ class ElasticsearchHelper:
             raise ElasticConnectionFailed()
 
     async def documents_init(self):
-        await documents_init(self.client())
+        await documents_init(self.get_client())
 
     async def close(self) -> None:
         if self._client:
             await self._client.close()
             self._client = None
 
-    def client(self) -> AsyncElasticsearch:
+    def get_client(self) -> AsyncElasticsearch:
         if self._client is None:
             raise ElasticClientNotInitializedException()
         return self._client
