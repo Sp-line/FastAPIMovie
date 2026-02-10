@@ -10,8 +10,7 @@ def get_app_options(
         log_level: LogLevel,
 ) -> GunicornAppOptions:
     return GunicornAppOptions(
-        host=host,
-        port=port,
+        bind=f"{host}:{port}",
         timeout=timeout,
         workers=workers,
         loglevel=log_level,
