@@ -86,6 +86,10 @@ class MetricsConfig(BaseModel):
     endpoint: str
 
 
+class SentryConfig(BaseModel):
+    dsn: HttpUrl
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -98,6 +102,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    sentry: SentryConfig
     metrics: MetricsConfig
     elasticsearch: ElasticsearchConfig
     redis: RedisConfig
