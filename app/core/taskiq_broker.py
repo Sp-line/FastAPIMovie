@@ -9,7 +9,7 @@ from .config import settings
 log = logging.getLogger(__name__)
 
 broker = AioPikaBroker(
-    uri=str(settings.taskiq.url),
+    url=str(settings.taskiq.url),
 )
 
 taskiq_fastapi.init(broker, "main:main_app")
