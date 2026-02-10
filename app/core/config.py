@@ -81,6 +81,11 @@ class ElasticsearchConfig(BaseModel):
     url: HttpUrl
 
 
+class MetricsConfig(BaseModel):
+    enabled: bool
+    endpoint: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -93,6 +98,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    metrics: MetricsConfig
     elasticsearch: ElasticsearchConfig
     redis: RedisConfig
     faststream: FastStreamConfig
