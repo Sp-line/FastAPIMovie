@@ -26,6 +26,7 @@ python-multipart = "^0.0.22"
 redis = "^7.1.0"
 elasticsearch = "^9.3.0"
 dishka = "^1.7.2"
+prometheus-fastapi-instrumentator = "^7.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
