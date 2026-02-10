@@ -18,6 +18,7 @@ from dishka.integrations.fastapi import setup_dishka as setup_fastapi_dishka
 from dishka.integrations.faststream import setup_dishka as setup_faststream_dishka
 from dishka.integrations.taskiq import setup_dishka as setup_taskiq_dishka
 
+from metrics.setup import setup_metrics
 from storage.s3 import s3_helper
 
 
@@ -46,6 +47,8 @@ def create() -> FastAPI:
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )
+
+    setup_metrics(app)
 
     container = make_async_container(
         InfrastructureProvider(),
