@@ -8,12 +8,13 @@ services:
       - "8000:8000"
     env_file:
       - app/.env
-    environment:
-      - POSTGRES_HOST=pg
-      - MINIO_HOST=minio
     depends_on:
       - pg
       - minio
+      - redis
+      - elasticsearch
+      - rabbitmq
+      - nats
     volumes:
       - .:/app
 
