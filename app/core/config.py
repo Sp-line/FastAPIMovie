@@ -90,6 +90,12 @@ class SentryConfig(BaseModel):
     dsn: HttpUrl
 
 
+class OTLPConfig(BaseModel):
+    enabled: bool
+    service_name: str
+    endpoint: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -102,6 +108,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    otlp: OTLPConfig
     sentry: SentryConfig
     metrics: MetricsConfig
     elasticsearch: ElasticsearchConfig
