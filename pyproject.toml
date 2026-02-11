@@ -28,6 +28,15 @@ elasticsearch = "^9.3.0"
 dishka = "^1.7.2"
 prometheus-fastapi-instrumentator = "^7.1.0"
 sentry-sdk = {extras = ["fast-api"], version = "^2.52.0"}
+opentelemetry-api = "^1.39.1"
+opentelemetry-sdk = "^1.39.1"
+opentelemetry-exporter-otlp = "^1.39.1"
+opentelemetry-instrumentation-fastapi = "^0.60b1"
+opentelemetry-instrumentation-sqlalchemy = "^0.60b1"
+opentelemetry-instrumentation-redis = "^0.60b1"
+opentelemetry-instrumentation-elasticsearch = "^0.60b1"
+opentelemetry-instrumentation-aiohttp-client = "^0.60b1"
+opentelemetry-instrumentation-logging = "^0.60b1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
