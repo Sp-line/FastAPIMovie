@@ -7,6 +7,7 @@ from fastapi.responses import ORJSONResponse
 import event_handlers  # noqa: F401
 from cache import redis_helper
 from core import broker, fs_router
+from core.config import settings
 from core.models import db_helper
 from dependencies.infrastructure import InfrastructureProvider
 from dependencies.repositories import RepositoryProvider
@@ -21,6 +22,7 @@ from dishka.integrations.taskiq import setup_dishka as setup_taskiq_dishka
 from metrics.setup import setup_metrics
 from sentry.setup import setup_sentry
 from storage.s3 import s3_helper
+from telemetry.setup import setup_telemetry, get_tracer_provider
 
 
 @asynccontextmanager
@@ -42,6 +44,9 @@ async def lifespan(app: FastAPI):
     await s3_helper.close()
     await db_helper.dispose()
 
+    if settings.otlp.enabled:
+        get_tracer_provider().shutdown()
+
 
 def create() -> FastAPI:
     app = FastAPI(
@@ -49,7 +54,12 @@ def create() -> FastAPI:
         lifespan=lifespan,
     )
     setup_sentry()
-    setup_metrics(app)
+
+    if settings.otlp.enabled:
+        setup_telemetry(app, db_helper.engine)
+
+    if settings.metrics.enabled:
+        setup_metrics(app)
 
     container = make_async_container(
         InfrastructureProvider(),
