@@ -9,6 +9,7 @@ services:
     env_file:
       - app/.env
     depends_on:
+      - tempo
       - pg
       - minio
       - redis
@@ -107,6 +108,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
+      - tempo
 
 
   promtail:
@@ -129,3 +131,16 @@ services:
       - "3100:3100"
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
+
+  tempo:
+    image: grafana/tempo:2.9.1
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo_storage:/var/tempo
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+
+volumes:
+  tempo_storage:
