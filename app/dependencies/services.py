@@ -8,6 +8,7 @@ from cache.movie import MovieCacheInvalidator
 from core.config import settings
 from elastic.country import CountryElasticSyncer
 from elastic.genre import GenreElasticSyncer
+from elastic.movie import MovieElasticSyncer
 from elastic.person import PersonElasticSyncer
 from schemas.cache import ModelCacheConfig
 from services.country import CountryService, CountrySearchService
@@ -57,6 +58,7 @@ class ServiceProvider(Provider):
     get_country_syncer = provide(CountryElasticSyncer)
     get_genre_syncer = provide(GenreElasticSyncer)
     get_person_syncer = provide(PersonElasticSyncer)
+    get_movie_syncer = provide(MovieElasticSyncer)
 
     get_movie_service = provide(MovieService)
     get_movie_file_service = provide(MovieFileService)
