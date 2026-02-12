@@ -130,6 +130,26 @@ class MovieSearchRead(Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class MovieElasticSchema(MovieRead):
+    genre_ids: Annotated[list[int], Field(default_factory=list)]
+    country_ids: Annotated[list[int], Field(default_factory=list)]
+    person_ids: Annotated[list[int], Field(default_factory=list)]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieElasticUpdateSchema(MovieUpdateDB):
+    genre_ids: list[int] | None = None
+    country_ids: list[int] | None = None
+    person_ids: list[int] | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieElasticBulkUpdateSchema(MovieElasticUpdateSchema, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
 movie_event_schemas = EventSchemas[
     MovieCreateEvent,
     MovieUpdateEvent,
