@@ -9,9 +9,7 @@ from telemetry.setup import get_tracer_provider
 
 router = NatsRouter(
     str(settings.faststream.nats_url),
-    middlewares=[
-        NatsTelemetryMiddleware(tracer_provider=get_tracer_provider())
-    ]
+    middlewares=[NatsTelemetryMiddleware(tracer_provider=get_tracer_provider())] if settings.otlp.enabled else (),
 )
 
 
