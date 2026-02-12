@@ -61,6 +61,14 @@ class PersonElasticSchema(Id):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PersonElasticUpdateSchema(PersonUpdateDB):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PersonElasticBulkUpdateSchema(PersonUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
 person_event_schemas = EventSchemas[
     PersonCreateEvent,
     PersonUpdateEvent,
