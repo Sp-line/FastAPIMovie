@@ -52,6 +52,14 @@ class CountryElasticSchema(CountryRead):
     model_config = ConfigDict(from_attributes=True)
 
 
+class CountryElasticUpdateSchema(CountryUpdateDB):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CountryElasticBulkUpdateSchema(CountryUpdateDB, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
 country_event_schemas = EventSchemas[
     CountryCreateEvent,
     CountryUpdateEvent,
