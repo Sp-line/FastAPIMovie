@@ -9,9 +9,10 @@ from filters.base import RangeFilter, TermFilter, FilterStrategy, WeightedTermFi
 from filters.types import RangeOperator
 from schemas.base import Id, Pagination
 from schemas.cache import ModelCacheConfig
-from schemas.country import CountryRead
 from schemas.event import EventSchemas
 from schemas.genre import GenreRead
+from schemas.movie_country import MovieCountryRelatedRead
+from schemas.movie_genre import MovieGenreRelatedRead
 from schemas.movie_person import MoviePersonRelatedRead
 from schemas.movie_shot import MovieRelatedShotRead
 
@@ -66,10 +67,11 @@ class MovieUpdateReq(MovieUpdateBase):
 
 
 class MovieDetail(MovieRead):
-    genres: Annotated[list[GenreRead], Field(default_factory=list)]
-    countries: Annotated[list[CountryRead], Field(default_factory=list)]
-    shots: Annotated[list[MovieRelatedShotRead], Field(default_factory=list)]
+    genre_associations: Annotated[list[MovieGenreRelatedRead], Field(default_factory=list)]
+    country_associations: Annotated[list[MovieCountryRelatedRead], Field(default_factory=list)]
     person_associations: Annotated[list[MoviePersonRelatedRead], Field(default_factory=list)]
+    shots: Annotated[list[MovieRelatedShotRead], Field(default_factory=list)]
+
 
     model_config = ConfigDict(from_attributes=True)
 

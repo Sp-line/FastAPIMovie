@@ -37,7 +37,8 @@ class MoviePersonRead(MoviePersonBase, Id):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MoviePersonRelatedRead(MoviePersonBase):
+class MoviePersonRelatedRead(Id):
+    role: MovieRoleType | None = None
     person: PersonRead
 
     model_config = ConfigDict(from_attributes=True)

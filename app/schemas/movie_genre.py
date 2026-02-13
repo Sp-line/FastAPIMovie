@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 from schemas.base import Id
 from schemas.event import EventSchemas
+from schemas.genre import GenreRead
 from schemas.m2m import CompositeIdBase
 
 
@@ -24,6 +25,12 @@ class MovieGenreUpdate(BaseModel):
 
 
 class MovieGenreRead(MovieGenreBase, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieGenreRelatedRead(Id):
+    genre: GenreRead
+
     model_config = ConfigDict(from_attributes=True)
 
 

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from schemas.base import Id
+from schemas.country import CountryRead
 from schemas.event import EventSchemas
 from schemas.m2m import CompositeIdBase
 
@@ -24,6 +25,12 @@ class MovieCountryUpdate(BaseModel):
 
 
 class MovieCountryRead(MovieCountryBase, Id):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MovieCountryRelatedRead(Id):
+    country: CountryRead
+
     model_config = ConfigDict(from_attributes=True)
 
 

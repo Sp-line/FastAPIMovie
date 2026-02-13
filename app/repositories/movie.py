@@ -62,10 +62,10 @@ class MovieRepository(
             select(Movie)
             .where(Movie.id == movie_id)
             .options(
-                selectinload(Movie.genres),
-                selectinload(Movie.countries),
+                selectinload(Movie.genre_associations).joinedload(MovieGenreAssociation.genre),
+                selectinload(Movie.country_associations).joinedload(MovieCountryAssociation.country),
+                selectinload(Movie.person_associations).joinedload(MoviePersonAssociation.person),
                 selectinload(Movie.shots),
-                selectinload(Movie.person_associations).joinedload(MoviePersonAssociation.person)
             )
         )
         result = await self._session.execute(stmt)
