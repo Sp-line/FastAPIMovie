@@ -1,5 +1,6 @@
 import logging
 
+from nats.js.api import RetentionPolicy, DiscardPolicy
 from pydantic import BaseModel, HttpUrl, PostgresDsn, AmqpDsn, NatsDsn, RedisDsn
 from pydantic_settings import (
     BaseSettings,
@@ -96,6 +97,14 @@ class OTLPConfig(BaseModel):
     endpoint: str
 
 
+class JStreamConfig(BaseModel):
+    name: str = "catalog_stream"
+    subjects: list[str] = ["catalog.>", ]
+    retention: RetentionPolicy = RetentionPolicy.LIMITS
+    max_age: int = 24 * 60 * 60
+    discard: DiscardPolicy = DiscardPolicy.OLD
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -108,6 +117,7 @@ class Settings(BaseSettings):
     gunicorn: GunicornConfig = GunicornConfig()
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
+    jstream: JStreamConfig = JStreamConfig()
     otlp: OTLPConfig
     sentry: SentryConfig
     metrics: MetricsConfig
