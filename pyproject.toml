@@ -37,6 +37,7 @@ opentelemetry-instrumentation-redis = "^0.60b1"
 opentelemetry-instrumentation-elasticsearch = "^0.60b1"
 opentelemetry-instrumentation-aiohttp-client = "^0.60b1"
 opentelemetry-instrumentation-logging = "^0.60b1"
+fastapi-limiter = "^0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
