@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, Text, SmallInteger, DateTime, CheckConstraint
+from sqlalchemy import String, Text, SmallInteger, DateTime, CheckConstraint, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from constants import ImageUrlLimits, MovieLimits
+from constants.movie import AgeRating
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
@@ -35,17 +36,19 @@ class Movie(IntIdPkMixin, Base):
             f"char_length(poster_url) > {ImageUrlLimits.MIN}",
             name="check_movie_poster_url_not_empty"
         ),
-        CheckConstraint(
-            f"char_length(age_rating) > {MovieLimits.AGE_RATING_MIN}",
-            name="check_movie_age_rating_not_empty"
-        ),
     )
 
     slug: Mapped[str] = mapped_column(String(MovieLimits.SLUG_MAX), unique=True)
     title: Mapped[str] = mapped_column(String(MovieLimits.TITLE_MAX))
     description: Mapped[str | None] = mapped_column(Text)
     duration: Mapped[int] = mapped_column(SmallInteger)
-    age_rating: Mapped[str | None] = mapped_column(String(MovieLimits.AGE_RATING_MAX))
+    age_rating: Mapped[AgeRating | None] = mapped_column(
+        SAEnum(
+            AgeRating,
+            name="age_rating",
+            values_callable=lambda obj: [e.value for e in obj]
+        )
+    )
     premiere_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     release_year: Mapped[int] = mapped_column(SmallInteger)
     poster_url: Mapped[str | None] = mapped_column(String(ImageUrlLimits.MAX))

@@ -4,6 +4,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, ConfigDict
 
 from constants import MovieLimits, ImageUrlLimits
+from constants.movie import AgeRating
 from filters.base import RangeFilter, TermFilter, FilterStrategy, WeightedTermFilter
 from filters.types import RangeOperator
 from schemas.base import Id, Pagination
@@ -21,8 +22,7 @@ class MovieSummaryBase(BaseModel):
     duration: Annotated[int, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)]
     release_year: Annotated[int, Field(ge=MovieLimits.RELEASE_YEAR_MIN)]
     poster_url: Annotated[str | None, Field(min_length=ImageUrlLimits.MIN, max_length=ImageUrlLimits.MAX)] = None
-    age_rating: Annotated[
-        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
+    age_rating: AgeRating | None = None
 
 
 class MovieBase(MovieSummaryBase):
@@ -42,8 +42,7 @@ class MovieCreateReq(BaseModel):
     title: Annotated[str, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)]
     duration: Annotated[int, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)]
     release_year: Annotated[int, Field(ge=MovieLimits.RELEASE_YEAR_MIN)]
-    age_rating: Annotated[
-        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
+    age_rating: AgeRating | None = None
     description: str | None = None
     premiere_date: datetime | None = None
 
@@ -52,8 +51,7 @@ class MovieUpdateBase(BaseModel):
     title: Annotated[str | None, Field(min_length=MovieLimits.TITLE_MIN, max_length=MovieLimits.TITLE_MAX)] = None
     duration: Annotated[int | None, Field(ge=MovieLimits.DURATION_MIN, le=MovieLimits.DURATION_MAX)] = None
     release_year: Annotated[int | None, Field(ge=MovieLimits.RELEASE_YEAR_MIN)] = None
-    age_rating: Annotated[
-        str | None, Field(min_length=MovieLimits.AGE_RATING_MIN, max_length=MovieLimits.AGE_RATING_MAX)] = None
+    age_rating: AgeRating | None = None
     description: str | None = None
     premiere_date: datetime | None = None
 
@@ -104,7 +102,7 @@ class MovieFilter(Pagination):
     duration_lte: Annotated[int | None, Field(le=MovieLimits.DURATION_MAX)] = None
     release_year_gte: Annotated[int | None, Field(ge=MovieLimits.RELEASE_YEAR_MIN)] = None
     release_year_lte: int | None = None
-    age_rating: str | None = None
+    age_rating: AgeRating | None = None
     genre_ids: list[int] | None = None
     country_ids: list[int] | None = None
     person_ids: list[int] | None = None
