@@ -1,3 +1,6 @@
+from typing import AsyncGenerator, Sequence
+
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from core.models import Person
@@ -27,6 +30,17 @@ class PersonRepository(
             Eventer(publishers=person_base_publishers),
             person_event_schemas
         )
+
+    async def get_for_elastic_sync_batched(self, batch_size: int = 100) -> AsyncGenerator[Sequence[Person], None]:
+        stmt = (
+            select(Person)
+            .execution_options(yield_per=batch_size)
+        )
+
+        result = await self._session.stream_scalars(stmt)
+
+        async for batch in result.partitions(batch_size):
+            yield batch
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
