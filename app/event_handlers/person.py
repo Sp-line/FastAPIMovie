@@ -6,7 +6,7 @@ from cache import PersonCacheInvalidator
 from core import fs_router, stream
 from elastic.person import PersonElasticSyncer
 from schemas.base import Id
-from schemas.person import PersonCreateEvent, PersonUpdateEvent, PersonElasticSchema
+from schemas.person import PersonCreateEvent, PersonUpdateEvent, PersonElasticSchema, PersonElasticUpdateSchema
 from dishka.integrations.faststream import FromDishka
 
 
@@ -124,7 +124,7 @@ async def persons_updated_sync_elastic(
         payload: PersonUpdateEvent,
         syncer: FromDishka[PersonElasticSyncer]
 ) -> None:
-    await syncer.upsert(PersonElasticSchema.model_validate(payload))
+    await syncer.update(payload.id, PersonElasticUpdateSchema.model_validate(payload))
 
 
 @fs_router.subscriber(

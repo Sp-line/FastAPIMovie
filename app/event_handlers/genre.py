@@ -6,7 +6,7 @@ from cache import GenreCacheInvalidator
 from core import fs_router, stream
 from elastic.genre import GenreElasticSyncer
 from schemas.base import Id
-from schemas.genre import GenreCreateEvent, GenreUpdateEvent, GenreElasticSchema
+from schemas.genre import GenreCreateEvent, GenreUpdateEvent, GenreElasticSchema, GenreElasticUpdateSchema
 from dishka.integrations.faststream import FromDishka
 
 
@@ -124,7 +124,7 @@ async def genres_updated_sync_elastic(
         payload: GenreUpdateEvent,
         syncer: FromDishka[GenreElasticSyncer]
 ) -> None:
-    await syncer.upsert(GenreElasticSchema.model_validate(payload))
+    await syncer.update(payload.id, GenreElasticUpdateSchema.model_validate(payload))
 
 
 @fs_router.subscriber(

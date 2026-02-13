@@ -251,7 +251,7 @@ async def movie_person_created_invalidate_movies_detail_cache(
 
 
 @fs_router.subscriber(
-    "catalog.movie.person.associations.created",
+    "catalog.movie.person.associations.bulk.created",
     stream=stream,
     deliver_policy=DeliverPolicy.NEW,
     ack_policy=AckPolicy.NACK_ON_ERROR
@@ -498,7 +498,7 @@ async def movies_updated_sync_elastic(
         payload: MovieUpdateEvent,
         syncer: FromDishka[MovieElasticSyncer]
 ) -> None:
-    await syncer.upsert(MovieElasticSchema.model_validate(payload))
+    await syncer.update(payload.id, MovieElasticUpdateSchema.model_validate(payload))
 
 
 @fs_router.subscriber(
@@ -538,9 +538,9 @@ async def movie_genre_created_sync_elastic(
 async def movie_genre_bulk_created_sync_elastic(
         payload: list[MovieGenreCreateEvent],
         syncer: FromDishka[MovieElasticSyncer],
-        movie_person_repo: FromDishka[MovieGenreRepository]
+        movie_genre_repo: FromDishka[MovieGenreRepository]
 ) -> None:
-    movie_ids_genre_ids_map = await movie_person_repo.get_movie_ids_with_genre_ids_by_movie_ids(
+    movie_ids_genre_ids_map = await movie_genre_repo.get_movie_ids_with_genre_ids_by_movie_ids(
         {event.movie_id for event in payload},
     )
 

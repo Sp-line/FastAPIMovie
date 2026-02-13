@@ -7,7 +7,7 @@ from cache import CountryCacheInvalidator
 from core import fs_router, stream
 from elastic.country import CountryElasticSyncer
 from schemas.base import Id
-from schemas.country import CountryCreateEvent, CountryUpdateEvent, CountryElasticSchema
+from schemas.country import CountryCreateEvent, CountryUpdateEvent, CountryElasticSchema, CountryElasticUpdateSchema
 
 
 @fs_router.subscriber(
@@ -124,7 +124,7 @@ async def countries_updated_sync_elastic(
         payload: CountryUpdateEvent,
         syncer: FromDishka[CountryElasticSyncer]
 ) -> None:
-    await syncer.upsert(CountryElasticSchema.model_validate(payload))
+    await syncer.update(payload.id, CountryElasticUpdateSchema.model_validate(payload))
 
 
 @fs_router.subscriber(
