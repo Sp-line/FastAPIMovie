@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI
+from faststream.nats import JStream
 from faststream.nats.fastapi import NatsRouter
 from faststream.nats.opentelemetry import NatsTelemetryMiddleware
 
@@ -10,6 +11,14 @@ from telemetry.setup import get_tracer_provider
 router = NatsRouter(
     str(settings.faststream.nats_url),
     middlewares=[NatsTelemetryMiddleware(tracer_provider=get_tracer_provider())] if settings.otlp.enabled else (),
+)
+
+stream = JStream(
+    name=settings.jstream.name,
+    subjects=settings.jstream.subjects,
+    retention=settings.jstream.retention,
+    max_age=settings.jstream.max_age,
+    discard=settings.jstream.discard,
 )
 
 
