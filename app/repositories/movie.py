@@ -1,10 +1,10 @@
-from typing import Sequence
+from typing import Sequence, AsyncGenerator
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import load_only, selectinload
 
-from core.models import Movie, MoviePersonAssociation
+from core.models import Movie, MoviePersonAssociation, Genre, Country, MovieCountryAssociation, MovieGenreAssociation
 from exceptions.db import UniqueFieldException
 from repositories.signals import SignalRepositoryBase
 from schemas.base import Id
@@ -70,6 +70,21 @@ class MovieRepository(
         )
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_for_elastic_sync_batched(self, batch_size: int = 50) -> AsyncGenerator[Sequence[Movie], None]:
+        stmt = (
+            select(Movie)
+            .options(
+                selectinload(Movie.genre_associations).load_only(MovieGenreAssociation.genre_id),
+                selectinload(Movie.country_associations).load_only(MovieCountryAssociation.country_id),
+                selectinload(Movie.person_associations).load_only(MoviePersonAssociation.person_id)
+            )
+            .execution_options(yield_per=batch_size)
+        )
+        result = await self._session.stream_scalars(stmt)
+
+        async for batch in result.partitions(batch_size):
+            yield batch
 
     def _handle_integrity_error(self, exc: IntegrityError) -> None:
         err_data = self._get_integrity_error_data(exc)
