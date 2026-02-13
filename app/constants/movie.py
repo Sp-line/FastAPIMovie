@@ -11,6 +11,9 @@ class MovieLimits:
     DURATION_MIN: int = 1
     DURATION_MAX: int = 600
 
+    AGE_RATING_MAX: int = 10
+    AGE_RATING_MIN: int = 2
+
     AGE_RATING_REQ: bool = False
 
     POSTER_URL_REQ: bool = False
