@@ -8,7 +8,7 @@ from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from core.models import Movie
+    from core.models import Movie, MovieCountryAssociation
 
 
 class Country(IntIdPkMixin, Base):
@@ -27,7 +27,14 @@ class Country(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(CountryLimits.NAME_MAX), unique=True)
     slug: Mapped[str] = mapped_column(String(CountryLimits.SLUG_MAX), unique=True)
 
+    movie_associations: Mapped[list["MovieCountryAssociation"]] = relationship(
+        back_populates="country",
+        cascade="all, delete-orphan"
+    )
+
     movies: Mapped[list["Movie"]] = relationship(
         secondary="movie_country_associations",
-        back_populates="countries"
+        back_populates="countries",
+        viewonly=True,
+        overlaps="movie_associations"
     )

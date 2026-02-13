@@ -8,7 +8,7 @@ from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from core.models import Movie
+    from core.models import Movie, MovieGenreAssociation
 
 
 class Genre(IntIdPkMixin, Base):
@@ -26,7 +26,14 @@ class Genre(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(GenreLimits.NAME_MAX), unique=True)
     slug: Mapped[str] = mapped_column(String(GenreLimits.SLUG_MAX), unique=True)
 
+    movie_associations: Mapped[list["MovieGenreAssociation"]] = relationship(
+        back_populates="genre",
+        cascade="all, delete-orphan"
+    )
+
     movies: Mapped[list["Movie"]] = relationship(
         secondary="movie_genre_associations",
-        back_populates="genres"
+        back_populates="genres",
+        viewonly=True,
+        overlaps="genre_associations"
     )
