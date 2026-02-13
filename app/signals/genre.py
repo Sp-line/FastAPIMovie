@@ -4,22 +4,22 @@ from schemas.genre import GenreCreateEvent, GenreUpdateEvent
 from schemas.event import BaseEventPublishers
 
 genre_created = fs_router.publisher(
-    "genres.created",
+    "catalog.genres.created",
     schema=GenreCreateEvent,
 )
 
 genre_bulk_created = fs_router.publisher(
-    "genres.bulk.created",
+    "catalog.genres.bulk.created",
     schema=list[GenreCreateEvent],
 )
 
 genre_updated = fs_router.publisher(
-    "genres.updated",
+    "catalog.genres.updated",
     schema=GenreUpdateEvent,
 )
 
 genre_deleted = fs_router.publisher(
-    "genres.deleted",
+    "catalog.genres.deleted",
     schema=Id,
 )
 

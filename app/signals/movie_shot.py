@@ -4,22 +4,22 @@ from schemas.event import BaseEventPublishers
 from schemas.movie_shot import MovieShotCreateEvent, MovieShotUpdateEvent
 
 movie_shot_created = fs_router.publisher(
-    "movie.shot.created",
+    "catalog.movie.shot.created",
     schema=MovieShotCreateEvent,
 )
 
 movie_shot_bulk_created = fs_router.publisher(
-    "movie.shot.bulk.created",
+    "catalog.movie.shot.bulk.created",
     schema=list[MovieShotCreateEvent],
 )
 
 movie_shot_updated = fs_router.publisher(
-    "movie.shot.updated",
+    "catalog.movie.shot.updated",
     schema=MovieShotUpdateEvent,
 )
 
 movie_shot_deleted = fs_router.publisher(
-    "movie.shot.deleted",
+    "catalog.movie.shot.deleted",
     schema=Id,
 )
 

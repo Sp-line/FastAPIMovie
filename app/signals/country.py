@@ -4,22 +4,22 @@ from schemas.country import CountryCreateEvent, CountryUpdateEvent
 from schemas.event import BaseEventPublishers
 
 country_created = fs_router.publisher(
-    "countries.created",
+    "catalog.countries.created",
     schema=CountryCreateEvent,
 )
 
 country_bulk_created = fs_router.publisher(
-    "countries.bulk.created",
+    "catalog.countries.bulk.created",
     schema=list[CountryCreateEvent],
 )
 
 country_updated = fs_router.publisher(
-    "countries.updated",
+    "catalog.countries.updated",
     schema=CountryUpdateEvent,
 )
 
 country_deleted = fs_router.publisher(
-    "countries.deleted",
+    "catalog.countries.deleted",
     schema=Id,
 )
 
