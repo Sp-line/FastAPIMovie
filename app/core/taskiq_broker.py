@@ -1,7 +1,8 @@
 import logging
 
 import taskiq_fastapi
-from taskiq import TaskiqEvents, TaskiqState
+from taskiq import TaskiqEvents, TaskiqState, TaskiqScheduler
+from taskiq.schedule_sources import LabelScheduleSource
 from taskiq_aio_pika import AioPikaBroker
 
 from .config import settings
@@ -11,6 +12,7 @@ log = logging.getLogger(__name__)
 broker = AioPikaBroker(
     url=str(settings.taskiq.url),
 )
+scheduler = TaskiqScheduler(broker, sources=[LabelScheduleSource(broker)])
 
 taskiq_fastapi.init(broker, "main:main_app")
 
