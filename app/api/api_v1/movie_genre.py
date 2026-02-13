@@ -1,12 +1,20 @@
-from fastapi import APIRouter
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
+from fastapi import APIRouter, Depends
+from fastapi_limiter.depends import RateLimiter
+from pyrate_limiter import Limiter, Rate, Duration
+
 from schemas.movie_genre import MovieGenreRead, MovieGenreCreate
 from services.m2m import MovieGenreService
 
 router = APIRouter(route_class=DishkaRoute)
 
 
-@router.post("/")
+@router.post(
+    "/",
+    dependencies=[
+        Depends(RateLimiter(limiter=Limiter(Rate(30, Duration.MINUTE)))),
+    ]
+)
 async def create_movie_genre_association(
         data: MovieGenreCreate,
         service: FromDishka[MovieGenreService]
@@ -14,7 +22,12 @@ async def create_movie_genre_association(
     return await service.create(data)
 
 
-@router.post("/bulk")
+@router.post(
+    "/bulk",
+    dependencies=[
+        Depends(RateLimiter(limiter=Limiter(Rate(5, Duration.MINUTE)))),
+    ]
+)
 async def bulk_create_movie_genre_associations(
         data: list[MovieGenreCreate],
         service: FromDishka[MovieGenreService]
@@ -22,7 +35,12 @@ async def bulk_create_movie_genre_associations(
     return await service.bulk_create(data)
 
 
-@router.delete("/{movie_genre_association_id}")
+@router.delete(
+    "/{movie_genre_association_id}",
+    dependencies=[
+        Depends(RateLimiter(limiter=Limiter(Rate(30, Duration.MINUTE)))),
+    ]
+)
 async def delete_movie_genre_association(
         movie_genre_association_id: int,
         service: FromDishka[MovieGenreService]
