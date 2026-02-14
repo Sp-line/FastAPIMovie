@@ -1,8 +1,11 @@
+from typing import Annotated
+
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
 from fastapi import APIRouter, UploadFile, Depends
 from fastapi_limiter.depends import RateLimiter
 from pyrate_limiter import Limiter, Rate, Duration
 
+from dependencies.files import validate_image_file
 from schemas.person import PersonUpdateReq, PersonCreateReq, PersonRead, PersonSearchRead
 from services.person import PersonSearchService, PersonService, PersonFileService
 
@@ -80,7 +83,11 @@ async def update_person(person_id: int, data: PersonUpdateReq, service: FromDish
         Depends(RateLimiter(limiter=Limiter(Rate(5, Duration.MINUTE)))),
     ]
 )
-async def update_person_photo(person_id: int, photo: UploadFile, service: FromDishka[PersonFileService]) -> PersonRead:
+async def update_person_photo(
+        person_id: int,
+        photo: Annotated[UploadFile, Depends(validate_image_file)],
+        service: FromDishka[PersonFileService]
+) -> PersonRead:
     return await service.save(person_id, photo)
 
 

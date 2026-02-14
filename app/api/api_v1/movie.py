@@ -5,6 +5,7 @@ from fastapi import APIRouter, UploadFile, Query, Depends
 from fastapi_limiter.depends import RateLimiter
 from pyrate_limiter import Limiter, Rate, Duration
 
+from dependencies.files import validate_image_file
 from schemas.movie import MovieList, MovieRead, MovieCreateReq, MovieUpdateReq, MovieDetail, MovieSearchRead, \
     MovieFilter
 from services.movie import MovieSearchService, MovieFilterService, MovieService, MovieFileService
@@ -116,7 +117,11 @@ async def update_movie(movie_id: int, data: MovieUpdateReq, service: FromDishka[
         Depends(RateLimiter(limiter=Limiter(Rate(5, Duration.MINUTE)))),
     ]
 )
-async def update_movie_poster(movie_id: int, poster: UploadFile, service: FromDishka[MovieFileService]) -> MovieRead:
+async def update_movie_poster(
+        movie_id: int,
+        poster: Annotated[UploadFile, Depends(validate_image_file)],
+        service: FromDishka[MovieFileService]
+) -> MovieRead:
     return await service.save(movie_id, poster)
 
 

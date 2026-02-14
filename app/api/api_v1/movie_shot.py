@@ -1,8 +1,11 @@
+from typing import Annotated
+
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
 from fastapi import APIRouter, UploadFile, Depends
 from fastapi_limiter.depends import RateLimiter
 from pyrate_limiter import Limiter, Rate, Duration
 
+from dependencies.files import validate_image_file
 from schemas.movie_shot import MovieShotCreateReq, MovieShotUpdateReq, MovieShotRead
 from services.movie_shot import MovieShotService, MovieShotFileService
 
@@ -68,8 +71,11 @@ async def update_movie_shot(movie_shot_id: int, data: MovieShotUpdateReq,
         Depends(RateLimiter(limiter=Limiter(Rate(5, Duration.MINUTE)))),
     ]
 )
-async def update_movie_shot_image(movie_shot_id: int, image: UploadFile,
-                                  service: FromDishka[MovieShotFileService]) -> MovieShotRead:
+async def update_movie_shot_image(
+        movie_shot_id: int,
+        image: Annotated[UploadFile, Depends(validate_image_file)],
+        service: FromDishka[MovieShotFileService]
+) -> MovieShotRead:
     return await service.save(movie_shot_id, image)
 
 
