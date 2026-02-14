@@ -5,7 +5,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 
 from core.models.mixins.int_id_pk import IntIdPkMixin
-from repositories.abc import IntegrityCheckerABC
+from db_integrity_handler.base import TableErrorHandler
 from signals.event_session import EventSession
 
 
@@ -13,10 +13,16 @@ class RepositoryBase[
     ModelType: IntIdPkMixin,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
-](IntegrityCheckerABC):
-    def __init__(self, model: type[ModelType], session: EventSession) -> None:
+]:
+    def __init__(
+            self,
+            model: type[ModelType],
+            session: EventSession,
+            table_error_handler: TableErrorHandler
+    ) -> None:
         self._model = model
         self._session = session
+        self._table_error_handler = table_error_handler
 
     async def get_all(
             self,
@@ -34,7 +40,7 @@ class RepositoryBase[
         try:
             await self._session.flush()
         except IntegrityError as e:
-            self._handle_integrity_error(e)
+            self._table_error_handler.handle(e)
             raise
 
         await self._session.refresh(obj)
@@ -54,7 +60,7 @@ class RepositoryBase[
         try:
             await self._session.flush()
         except IntegrityError as e:
-            self._handle_integrity_error(e)
+            self._table_error_handler.handle(e)
             raise
 
         return objs
@@ -77,7 +83,7 @@ class RepositoryBase[
         try:
             result = await self._session.execute(stmt)
         except IntegrityError as e:
-            self._handle_integrity_error(e)
+            self._table_error_handler.handle(e)
             raise
 
         return result.scalar_one_or_none()
@@ -88,7 +94,7 @@ class RepositoryBase[
         try:
             result = await self._session.execute(stmt)
         except IntegrityError as e:
-            self._handle_integrity_error(e)
+            self._table_error_handler.handle(e)
             raise
 
         return result.rowcount > 0  # type: ignore

@@ -1,10 +1,9 @@
 from typing import Sequence, Iterable
 
-from sqlalchemy import select, Row
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select
 
 from core.models import MovieCountryAssociation, MovieGenreAssociation, MoviePersonAssociation
-from exceptions.db import UniqueException, RelatedObjectNotFoundException
+from db_integrity_handler import movie_genre_error_handler, movie_country_error_handler, movie_person_error_handler
 from repositories.signals import SignalRepositoryBase
 from schemas.movie_country import MovieCountryUpdate, MovieCountryCreate, MovieCountryCreateEvent, \
     MovieCountryUpdateEvent, movie_country_event_schemas, MovieCountryDeleteEvent
@@ -33,10 +32,11 @@ class MovieCountryRepository(
 ):
     def __init__(self, session: EventSession) -> None:
         super().__init__(
-            MovieCountryAssociation,
-            session,
-            Eventer(movie_country_base_publishers),
-            movie_country_event_schemas
+            model=MovieCountryAssociation,
+            session=session,
+            table_error_handler=movie_country_error_handler,
+            eventer=Eventer(movie_country_base_publishers),
+            event_schemas=movie_country_event_schemas
         )
 
     async def get_movie_ids_by_country_id(self, country_id: int) -> Sequence[int]:
@@ -61,27 +61,6 @@ class MovieCountryRepository(
         result = await self._session.execute(stmt)
         return populate_association_map(result.all(), result_map)
 
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        err_data = self._get_integrity_error_data(exc)
-
-        match err_data.sqlstate:
-            case "23505":
-                match err_data.constraint_name:
-                    case "uq_country_movie":
-                        raise UniqueException(err_data.table_name, "country_id", "movie_id")
-            case "23503":
-                match err_data.constraint_name:
-                    case "fk_movie_country_associations_country_id_countries":
-                        raise RelatedObjectNotFoundException(
-                            field_name="country_id",
-                            table_name="countries",
-                        )
-                    case "fk_movie_country_associations_movie_id_movies":
-                        raise RelatedObjectNotFoundException(
-                            field_name="movie_id",
-                            table_name="movies"
-                        )
-
 
 class MovieGenreRepository(
     SignalRepositoryBase
@@ -96,10 +75,11 @@ class MovieGenreRepository(
 ):
     def __init__(self, session: EventSession) -> None:
         super().__init__(
-            MovieGenreAssociation,
-            session,
-            Eventer(movie_genre_base_publishers),
-            movie_genre_event_schemas
+            model=MovieGenreAssociation,
+            session=session,
+            table_error_handler=movie_genre_error_handler,
+            eventer=Eventer(movie_genre_base_publishers),
+            event_schemas=movie_genre_event_schemas,
         )
 
     async def get_movie_ids_by_genre_id(self, genre_id: int) -> Sequence[int]:
@@ -125,27 +105,6 @@ class MovieGenreRepository(
         result = await self._session.execute(stmt)
         return populate_association_map(result.all(), result_map)
 
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        err_data = self._get_integrity_error_data(exc)
-
-        match err_data.sqlstate:
-            case "23505":
-                match err_data.constraint_name:
-                    case "uq_movie_genre":
-                        raise UniqueException(err_data.table_name, "genre_id", "movie_id")
-            case "23503":
-                match err_data.constraint_name:
-                    case "fk_movie_genre_associations_genre_id_genres":
-                        raise RelatedObjectNotFoundException(
-                            field_name="genre_id",
-                            table_name="genres",
-                        )
-                    case "fk_movie_genre_associations_movie_id_movies":
-                        raise RelatedObjectNotFoundException(
-                            field_name="movie_id",
-                            table_name="movies"
-                        )
-
 
 class MoviePersonRepository(
     SignalRepositoryBase
@@ -160,10 +119,11 @@ class MoviePersonRepository(
 ):
     def __init__(self, session: EventSession) -> None:
         super().__init__(
-            MoviePersonAssociation,
-            session,
-            Eventer(movie_person_base_publishers),
-            movie_person_event_schemas
+            model=MoviePersonAssociation,
+            session=session,
+            table_error_handler=movie_person_error_handler,
+            eventer=Eventer(movie_person_base_publishers),
+            event_schemas=movie_person_event_schemas
         )
 
     async def get_movie_ids_by_person_id(self, person_id: int) -> Sequence[int]:
@@ -187,24 +147,3 @@ class MoviePersonRepository(
         )
         result = await self._session.execute(stmt)
         return populate_association_map(result.all(), result_map)
-
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        err_data = self._get_integrity_error_data(exc)
-
-        match err_data.sqlstate:
-            case "23505":
-                match err_data.constraint_name:
-                    case "uq_movie_person_role":
-                        raise UniqueException(err_data.table_name, "person_id", "movie_id", "role")
-            case "23503":
-                match err_data.constraint_name:
-                    case "fk_movie_person_associations_person_id_persons":
-                        raise RelatedObjectNotFoundException(
-                            field_name="person_id",
-                            table_name="persons",
-                        )
-                    case "fk_movie_person_associations_movie_id_movies":
-                        raise RelatedObjectNotFoundException(
-                            field_name="movie_id",
-                            table_name="movies"
-                        )

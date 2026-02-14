@@ -1,7 +1,5 @@
-from sqlalchemy.exc import IntegrityError
-
 from core.models import MovieShot
-from exceptions.db import RelatedObjectNotFoundException
+from db_integrity_handler import movie_shots_error_handler
 from repositories.signals import SignalRepositoryBase
 from schemas.movie_shot import MovieShotCreateDB, MovieShotUpdateDB, MovieShotCreateEvent, MovieShotUpdateEvent, \
     movie_shot_event_schemas, MovieShotDeleteEvent
@@ -22,17 +20,9 @@ class MovieShotRepository(
 ):
     def __init__(self, session: EventSession) -> None:
         super().__init__(
-            MovieShot,
-            session,
-            Eventer(movie_shot_base_publishers),
-            movie_shot_event_schemas
+            model=MovieShot,
+            session=session,
+            table_error_handler=movie_shots_error_handler,
+            eventer=Eventer(movie_shot_base_publishers),
+            event_schemas=movie_shot_event_schemas
         )
-
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        err_data = self._get_integrity_error_data(exc)
-
-        match err_data.sqlstate:
-            case "23503":
-                match err_data.constraint_name:
-                    case "fk_movie_shots_movie_id_movies":
-                        raise RelatedObjectNotFoundException(field_name="movie_id", table_name="movies")

@@ -1,11 +1,10 @@
 from typing import Sequence, AsyncGenerator
 
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import load_only, selectinload
 
-from core.models import Movie, MoviePersonAssociation, Genre, Country, MovieCountryAssociation, MovieGenreAssociation
-from exceptions.db import UniqueFieldException
+from core.models import Movie, MoviePersonAssociation, MovieCountryAssociation, MovieGenreAssociation
+from db_integrity_handler import movies_error_handler
 from repositories.signals import SignalRepositoryBase
 from schemas.base import Id
 from schemas.movie import MovieCreateDB, MovieUpdateDB, MovieCreateEvent, MovieUpdateEvent, movie_event_schemas
@@ -26,10 +25,11 @@ class MovieRepository(
 ):
     def __init__(self, session: EventSession) -> None:
         super().__init__(
-            Movie,
-            session,
-            Eventer(movie_base_publishers),
-            movie_event_schemas
+            model=Movie,
+            session=session,
+            table_error_handler=movies_error_handler,
+            eventer=Eventer(movie_base_publishers),
+            event_schemas=movie_event_schemas
         )
 
     async def get_for_list(
@@ -85,12 +85,3 @@ class MovieRepository(
 
         async for batch in result.partitions(batch_size):
             yield batch
-
-    def _handle_integrity_error(self, exc: IntegrityError) -> None:
-        err_data = self._get_integrity_error_data(exc)
-
-        match err_data.sqlstate:
-            case "23505":
-                match err_data.constraint_name:
-                    case "uq_movies_slug":
-                        raise UniqueFieldException(field_name="slug", table_name=err_data.table_name)

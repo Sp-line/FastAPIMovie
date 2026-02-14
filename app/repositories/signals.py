@@ -5,6 +5,7 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 
 from core.models.mixins.int_id_pk import IntIdPkMixin
+from db_integrity_handler.base import TableErrorHandler
 from repositories.base import RepositoryBase
 from repositories.unit_of_work import UnitOfWork
 from schemas.base import Id
@@ -32,6 +33,7 @@ class SignalRepositoryBase[
             self,
             model: type[TModel],
             session: EventSession,
+            table_error_handler: TableErrorHandler,
             eventer: Eventer,
             event_schemas: EventSchemas[
                 TCreateEventSchema,
@@ -39,7 +41,7 @@ class SignalRepositoryBase[
                 TDeleteEventSchema
             ]
     ) -> None:
-        super().__init__(model, session)
+        super().__init__(model, session, table_error_handler)
         self._eventer = eventer
         self.event_schemas = event_schemas
 
@@ -80,7 +82,7 @@ class SignalRepositoryBase[
             result = await self._session.execute(stmt)
             deleted_row = result.scalar_one_or_none()
         except IntegrityError as e:
-            self._handle_integrity_error(e)
+            self._table_error_handler.handle(e)
             raise
 
         if deleted_row:
