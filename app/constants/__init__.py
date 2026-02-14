@@ -6,9 +6,10 @@ __all__ = (
     "GenreLimits",
     "MovieShotLimits",
     "PersonLimits",
+    "AllowedMimeTypes"
 )
 
-from constants.base import ImageUrlLimits
+from constants.base import ImageUrlLimits, AllowedMimeTypes
 from constants.country import CountryLimits
 from constants.genre import GenreLimits
 from constants.movie import MovieLimits
